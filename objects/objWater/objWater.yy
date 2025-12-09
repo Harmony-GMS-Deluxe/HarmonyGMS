@@ -1,17 +1,20 @@
 {
   "$GMObject":"",
-  "%Name":"objHUD",
+  "%Name":"objWater",
   "eventList":[
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":64,"eventType":8,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
+    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
-  "name":"objHUD",
+  "name":"objWater",
   "overriddenProperties":[],
   "parent":{
-    "name":"Display",
-    "path":"folders/Objects/Display.yy",
+    "name":"Water",
+    "path":"folders/Objects/Zone/Water.yy",
   },
-  "parentObjectId":null,
+  "parentObjectId":{
+    "name":"objZoneObject",
+    "path":"objects/objZoneObject/objZoneObject.yy",
+  },
   "persistent":false,
   "physicsAngularDamping":0.1,
   "physicsDensity":0.5,
@@ -29,7 +32,10 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"sprWaterMask",
+    "path":"sprites/sprWaterMask/sprWaterMask.yy",
+  },
   "spriteMaskId":null,
   "visible":false,
 }

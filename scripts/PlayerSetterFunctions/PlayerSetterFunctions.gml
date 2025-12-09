@@ -152,6 +152,21 @@ function player_refresh_physics()
 		air_acceleration *= 2;
 		roll_friction *= 2;
 	}
+	
+	// Underwater modification
+	if (underwater)
+	{
+		speed_cap *= 0.5;
+		acceleration *= 0.5;
+		deceleration *= 0.5;
+		friction *= 0.5;
+		roll_friction *= 0.5;
+		air_acceleration *= 0.5;
+		jump_height -= 3;
+		jump_release *= 0.5;
+		gravity_force = 0.0625;
+		recoil_gravity = gravity_force;
+	}
 }
 
 /// @function player_in_bounds()

@@ -3,20 +3,25 @@ image_speed = 0;
 
 // State machine
 state = player_is_ready;
+state_previous = -1;
 state_changed = false;
 
 rolling = false;
 jump_action = false;
+underwater = false;
 
 spindash_charge = 0;
 
 // Timers
 rotation_lock_time = 0;
 control_lock_time = 0;
+remaining_air_time = 0;
 superspeed_time = 0;
 camera_look_time = 0;
 
-slide_duration = 30;
+slide_duration = 32;
+spring_duration = 16;
+remaining_air_duration = 1800;
 
 // Physics
 x_speed = 0;
@@ -56,6 +61,9 @@ if (layer_exists("TilesLayer0"))
 tilemap_count = array_length(solid_entities);
 semisolid_tilemap = layer_tilemap_get_id("TilesSemisolid");
 
+reaction_list = ds_list_create();
+previous_reaction_list = ds_list_create();
+
 // Animations
 animations =
 {
@@ -73,15 +81,24 @@ animations =
 // Misc.
 instance_create_layer(x, y, layer, objCamera, { gravity_direction });
 
-/// @method player_perform(action)
+/// @method player_perform(action, [enter])
 /// @description Sets the given function as the player's current state.
 /// @param {Function} action State function to set.
-player_perform = function (action)
+/// @param {Bool} enter Whether to perform the enter phase.
+player_perform = function(action, enter = true)
 {
-	state(PHASE.EXIT);
-	state = action;
-	state_changed = true;
-	state(PHASE.ENTER);
+	var state_reset = (argument_count > 1);
+	if (state != action || state_reset)
+	{
+		state_previous = state;
+		state = action;
+		state_changed = true;
+		if (script_exists(state_previous)) state_previous(PHASE.EXIT);
+		if (enter) 
+		{
+			if (script_exists(state)) state(PHASE.ENTER);
+		}
+	}
 };
 
 /// @method player_rotate_mask()

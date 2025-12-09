@@ -1,10 +1,16 @@
 /// @description Initialize
 image_speed = 0;
-reaction = function (inst)
+reaction_test = function (inst)
 {
-	// Abort if not intersecting the ring
-	if (not player_collision(inst)) exit;
-	
+	// React if intersecting the ring
+	if (player_collision(inst))
+	{
+		player_react_to(inst);
+	};
+}
+
+reaction_on_enter = function (inst)
+{
 	// Collect
 	player_gain_rings(1);
 	with (inst)

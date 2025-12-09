@@ -73,3 +73,19 @@ function player_ray_collision(obj, xoff, ylen)
 	
 	return collision_line(x1, y1, x2, y2, obj, true, false) != noone;
 }
+
+/// @function player_point_in_rectangle(obj, [x], [y])
+/// @description Checks if the given entity's rectangle intersects a point within from the player's position.
+/// @param {Asset.GMObject|Id.Instance|Id.TileMapElement} obj Object, instance or tilemap element to check.
+/// @param {Real} x Horizontal position in pixels (Optional, defaults is the player's floored x position.)
+/// @param {Real} y Vertical position in pixels (Optional, defaults is the player's floored y position.)
+/// @returns {Bool}
+function player_point_in_rectangle(obj, pos_x = x div 1, pos_y = y div 1)
+{
+	var x1 = obj.bbox_left;
+	var y1 = obj.bbox_top;
+	var x2 = obj.bbox_right;
+	var y2 = obj.bbox_bottom;
+	
+	return point_in_rectangle(pos_x, pos_y, x1, y1, x2, y2) != noone;
+}
