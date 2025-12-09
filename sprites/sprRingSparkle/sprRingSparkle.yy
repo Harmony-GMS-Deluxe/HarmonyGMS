@@ -28,8 +28,8 @@
   "nineSlice":null,
   "origin":4,
   "parent":{
-    "name":"Ring",
-    "path":"folders/Sprites/Ring.yy",
+    "name":"Effects",
+    "path":"folders/Sprites/Zone/General/Effects.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

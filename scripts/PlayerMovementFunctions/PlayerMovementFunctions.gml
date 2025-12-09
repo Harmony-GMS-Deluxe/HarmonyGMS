@@ -15,6 +15,9 @@ function player_move_on_ground()
 	to check for collision instead of their virtual mask.
 	However, unless the player's virtual mask is wider than their sprite's, this is not an issue. */
 	
+	// Memorize Reactions
+	player_memorize_reactions();
+	
 	// Calculate the number of steps for collision checking
 	var total_steps = 1 + abs(x_speed) div x_radius;
 	var step = x_speed / total_steps;
@@ -29,6 +32,9 @@ function player_move_on_ground()
 		
 		// Register nearby instances
 		player_detect_entities();
+		
+		// Register the reaction of all instances
+		player_trigger_reactions();
 		
 		// Handle wall collision
 		var tile_data = player_find_wall();
@@ -56,22 +62,29 @@ function player_move_on_ground()
 function player_move_in_air()
 {
 	// Calculate the number of steps for collision checking
-	var total_steps = 1 + abs(x_speed) div x_radius + abs(y_speed) div y_radius;
-	var x_step = x_speed / total_steps;
-	var y_step = y_speed / total_steps;
+	var total_x_steps = 1 + abs(x_speed) div x_radius;
+	var total_y_steps = 1 + abs(y_speed) div y_radius;
+	var x_step = x_speed / total_x_steps;
+	var y_step = y_speed / total_y_steps;
 	var sine = dsin(direction);
 	var cosine = dcos(direction);
 	
+	// Memorize Reactions
+	player_memorize_reactions();
+	
 	// Loop over the number of steps
-	repeat (total_steps)
+	repeat (total_x_steps)
 	{
 		// Move by a single step
-		x += cosine * x_step + sine * y_step;
-		y += -sine * x_step + cosine * y_step;
+		x += cosine * x_step;
+		y -= sine * x_step;
 		player_in_bounds();
 		
 		// Register nearby instances
 		player_detect_entities();
+		
+		// Register the reaction of all instances
+		player_trigger_reactions();
 		
 		// Handle wall collision
 		var tile_data = player_find_wall();
@@ -79,6 +92,24 @@ function player_move_in_air()
 		{
 			x_speed = 0;
 		}
+	}
+	
+	// Memorize Reactions
+	player_memorize_reactions();
+	
+	// Loop over the number of steps
+	repeat (total_y_steps)
+	{
+		// Move by a single step
+		x += sine * y_step;
+		y += cosine * y_step;
+		player_in_bounds();
+		
+		// Register nearby instances
+		player_detect_entities();
+		
+		// Register the reaction of all instances
+		player_trigger_reactions();
 		
 		// Handle floor collision
 		if (y_speed >= 0)
