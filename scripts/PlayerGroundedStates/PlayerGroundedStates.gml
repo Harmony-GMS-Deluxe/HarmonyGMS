@@ -47,7 +47,7 @@ function player_is_standing(phase)
 		case PHASE.STEP:
 		{
 			// Jump
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
+			if (input_button.jump.pressed) return player_perform(player_is_jumping);
 			
 			// Move
 			player_move_on_ground();
@@ -67,7 +67,7 @@ function player_is_standing(phase)
 			}
 			
 			// Run
-			if (input_check(INPUT.LEFT) or input_check(INPUT.RIGHT) or x_speed != 0)
+			if (x_speed != 0 or input_axis_x != 0)
 			{
 				return player_perform(player_is_running);
 			}
@@ -75,8 +75,8 @@ function player_is_standing(phase)
 			// Look / crouch
 			if (cliff_sign == 0)
 			{
-				if (input_check(INPUT.UP)) return player_perform(player_is_looking);
-				if (input_check(INPUT.DOWN)) return player_perform(player_is_crouching);
+				if (input_axis_y == -1) return player_perform(player_is_looking);
+				if (input_axis_y == 1) return player_perform(player_is_crouching);
 			}
 			break;
 		}
@@ -100,32 +100,31 @@ function player_is_running(phase)
 		case PHASE.STEP:
 		{
 			// Jump
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
+			if (input_button.jump.pressed) return player_perform(player_is_jumping);
 			
 			// Handle ground motion
-			var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
 			var can_brake = (animation == "brake");
 			
 			if (control_lock_time == 0)
 			{
-				if (input_sign != 0)
+				if (input_axis_x != 0)
 				{
 					// If moving in the opposite direction...
-					if (x_speed != 0 and sign(x_speed) != input_sign)
+					if (x_speed != 0 and sign(x_speed) != input_axis_x)
 					{
 						// Decelerate and reverse direction
 						can_brake = true;
-						x_speed += deceleration * input_sign;
-						if (sign(x_speed) == input_sign) x_speed = deceleration * input_sign;
+						x_speed += deceleration * input_axis_x;
+						if (sign(x_speed) == input_axis_x) x_speed = deceleration * input_axis_x;
 					}
 					else
 					{
 						// Accelerate
 						can_brake = false;
-						image_xscale = input_sign;
+						image_xscale = input_axis_x;
 						if (abs(x_speed) < speed_cap)
 						{
-							x_speed = min(abs(x_speed) + acceleration, speed_cap) * input_sign;
+							x_speed = min(abs(x_speed) + acceleration, speed_cap) * input_axis_x;
 						}
 					}
 				}
@@ -160,14 +159,14 @@ function player_is_running(phase)
 			player_resist_slope(0.125);
 			
 			// Roll
-			if (input_sign == 0 and abs(x_speed) >= 1.03125 and input_check(INPUT.DOWN))
+			if (input_axis_x == 0 and abs(x_speed) >= 1.03125 and input_check(INPUT.DOWN))
 			{
 				sound_play(sfxRoll);
 				return player_perform(player_is_rolling);
 			}
 			
 			// Stand
-			if (x_speed == 0 and input_sign == 0) return player_perform(player_is_standing);
+			if (x_speed == 0 and input_axis_x == 0) return player_perform(player_is_standing);
 			
 			// Brake
 			if (can_brake and mask_direction == gravity_direction and abs(x_speed) >= 4 and animation != "brake")
@@ -175,7 +174,7 @@ function player_is_running(phase)
 				player_animate("brake");
 				timeline_speed = 1;
 				image_angle = gravity_direction;
-				image_xscale = -input_sign;
+				image_xscale = -input_axis_x;
 				sound_play(sfxBrake);
 			}
 			
@@ -222,7 +221,7 @@ function player_is_looking(phase)
 		case PHASE.STEP:
 		{
 			// Jump
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
+			if (input_button.jump.pressed) return player_perform(player_is_jumping);
 			
 			// Move
 			player_move_on_ground();
@@ -279,7 +278,7 @@ function player_is_crouching(phase)
 		case PHASE.STEP:
 		{
 			// Spindash
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_spindashing);
+			if (input_button.jump.pressed) return player_perform(player_is_spindashing);
 			
 			// Move
 			player_move_on_ground();
@@ -337,20 +336,19 @@ function player_is_rolling(phase)
 		case PHASE.STEP:
 		{
 			// Jump
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
+			if (input_button.jump.pressed) return player_perform(player_is_jumping);
 			
 			// Decelerate
 			if (control_lock_time == 0)
 			{
-				var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
-				if (input_sign != 0)
+				if (input_axis_x != 0)
 				{
-					if (sign(x_speed) != input_sign)
+					if (sign(x_speed) != input_axis_x)
 					{
-						x_speed += roll_deceleration * input_sign;
-						if (sign(x_speed) == input_sign) x_speed = roll_deceleration * input_sign;
+						x_speed += roll_deceleration * input_axis_x;
+						if (sign(x_speed) == input_axis_x) x_speed = roll_deceleration * input_axis_x;
 					}
-					else image_xscale = input_sign;
+					else image_xscale = input_axis_x;
 				}
 				
 				// Friction
@@ -440,7 +438,7 @@ function player_is_spindashing(phase)
 			}
 			
 			// Charge / atrophy
-			if (input_check_pressed(INPUT.ACTION))
+			if (input_button.jump.pressed)
 			{
 				spindash_charge = min(spindash_charge + 2, 8);
 				

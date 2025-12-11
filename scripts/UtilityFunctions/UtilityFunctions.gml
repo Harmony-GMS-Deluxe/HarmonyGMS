@@ -32,6 +32,39 @@ function particle_spawn(name, ox, oy, num = 1)
 {
 	with (global.sprite_particles)
 	{
-		part_particles_create(system, ox, oy, self[$ name], num);
+		if (ds_map_exists(particles, name))
+		{
+			part_particles_create(system, ox, oy, particles[? name], num);
+		}
 	}
+}
+
+/// @function timeline_set(obj, timeline, [frames], [loop], [reset])
+/// @description Assigns the given timeline to the calling instance
+/// @param {Asset.GMObject|Id.Instance} obj Object or instance to check
+/// @param {Asset.GMTimeline} timeline Timeline to set.
+/// @param {Real} frames (Optional) timeline speed in frames
+/// @param {Bool} loop (Optional) whether or not the timeline should repeat
+/// @param {Bool} reset (Optional) whether or not to ignore if the same timeline is already assigned
+function timeline_set(obj, timeline, frames = 1, loop = true, reset = true)
+{
+	with (obj) {
+		if (timeline_index != timeline or reset) {
+	        timeline_index = timeline;
+	        timeline_speed = 1 / frames;
+			timeline_loop = loop;
+			timeline_running = timeline_exists(timeline);
+			timeline_position = 0;
+	    }
+	}
+}
+
+/// @function timeline_expired(obj)
+/// @description Checks if any obj (or instance) has a timeline that has reached its last moment
+/// @param {Asset.GMObject|Id.Instance} obj Object or instance to check
+/// @returns {Bool}
+function timeline_expired(obj)
+{
+	return (instance_exists(obj) and timeline_exists(obj.timeline_index) and 
+		obj.timeline_position >= timeline_max_moment(obj.timeline_index));
 }

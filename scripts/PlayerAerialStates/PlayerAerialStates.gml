@@ -16,16 +16,15 @@ function player_is_falling(phase)
 		case PHASE.STEP:
 		{
 			// Accelerate
-			var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
-			if (input_sign != 0)
+			if (input_axis_x != 0)
 			{
-				image_xscale = input_sign;
-				if (abs(x_speed) < speed_cap or sign(x_speed) != input_sign)
+				image_xscale = input_axis_x;
+				if (abs(x_speed) < speed_cap or sign(x_speed) != input_axis_x)
 				{
-					x_speed += air_acceleration * input_sign;
-					if (abs(x_speed) > speed_cap and sign(x_speed) == input_sign)
+					x_speed += air_acceleration * input_axis_x;
+					if (abs(x_speed) > speed_cap and sign(x_speed) == input_axis_x)
 					{
-						x_speed = speed_cap * input_sign;
+						x_speed = speed_cap * input_axis_x;
 					}
 				}
 			}
@@ -73,7 +72,6 @@ function player_is_jumping(phase)
 		{
 			// Set flags
 			rolling = true;
-			jump_action = true;
 			
 			// Leap
 			var sine = dsin(local_direction);
@@ -96,16 +94,15 @@ function player_is_jumping(phase)
 		case PHASE.STEP:
 		{
 			// Accelerate
-			var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
-			if (input_sign != 0)
+			if (input_axis_x != 0)
 			{
-				image_xscale = input_sign;
-				if (abs(x_speed) < speed_cap or sign(x_speed) != input_sign)
+				image_xscale = input_axis_x;
+				if (abs(x_speed) < speed_cap or sign(x_speed) != input_axis_x)
 				{
-					x_speed += air_acceleration * input_sign;
-					if (abs(x_speed) > speed_cap and sign(x_speed) == input_sign)
+					x_speed += air_acceleration * input_axis_x;
+					if (abs(x_speed) > speed_cap and sign(x_speed) == input_axis_x)
 					{
-						x_speed = speed_cap * input_sign;
+						x_speed = speed_cap * input_axis_x;
 					}
 				}
 			}
@@ -118,7 +115,7 @@ function player_is_jumping(phase)
 			if (on_ground) return player_perform(x_speed != 0 ? player_is_running : player_is_standing);
 			
 			// Lower height
-			if (input_check_released(INPUT.ACTION) and y_speed < -jump_release)
+			if (input_button.jump.released and y_speed < -jump_release)
 			{
 				y_speed = -jump_release;
 			}
@@ -138,6 +135,8 @@ function player_is_jumping(phase)
 		}
 		case PHASE.EXIT:
 		{
+			// Set flags
+			jump_action = true;
 			break;
 		}
 	}

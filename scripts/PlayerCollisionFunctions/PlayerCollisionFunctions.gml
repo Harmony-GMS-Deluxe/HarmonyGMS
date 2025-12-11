@@ -87,5 +87,5 @@ function player_point_in_rectangle(obj, pos_x = x div 1, pos_y = y div 1)
 	var x2 = obj.bbox_right;
 	var y2 = obj.bbox_bottom;
 	
-	return point_in_rectangle(pos_x, pos_y, x1, y1, x2, y2) != noone;
+	return point_in_rectangle(pos_x, pos_y, x1, y1, x2, y2);
 }
