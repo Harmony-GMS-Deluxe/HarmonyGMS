@@ -37,17 +37,19 @@ function player_move_on_ground()
 		player_trigger_reactions();
 		
 		// Handle wall collision
-		var tile_data = player_find_wall();
-		if (tile_data != noone and sign(x_speed) == player_eject_wall(tile_data))
+		player_get_wall_data();
+		if (wall_id != noone)
 		{
-			x_speed = 0;
+			if (sign(x_speed) == wall_sign)
+			{
+				x_speed = 0;
+			}
 		}
 		
 		// Handle floor collision
 		if (on_ground)
 		{
-			//tile_data = player_find_floor(y_radius + (ground_snap ? y_tile_reach : 1));
-			tile_data = player_find_floor(y_radius + min(2 + abs(x_speed) div 1, y_tile_reach));
+			var tile_data = player_find_floor(y_radius + min(2 + abs(x_speed) div 1, y_tile_reach));
 			if (tile_data != undefined)
 			{
 				player_ground(tile_data);
@@ -88,10 +90,13 @@ function player_move_in_air()
 		player_trigger_reactions();
 		
 		// Handle wall collision
-		var tile_data = player_find_wall();
-		if (tile_data != noone and sign(x_speed) == player_eject_wall(tile_data))
+		player_get_wall_data();
+		if (wall_id != noone)
 		{
-			x_speed = 0;
+			if (sign(x_speed) == wall_sign)
+			{
+				x_speed = 0;
+			}
 		}
 	}
 	
@@ -115,7 +120,7 @@ function player_move_in_air()
 		// Handle floor collision
 		if (y_speed >= 0)
 		{
-			tile_data = player_find_floor(y_radius);
+			var tile_data = player_find_floor(y_radius);
 			if (tile_data != undefined)
 			{
 				landed = true;
@@ -126,7 +131,7 @@ function player_move_in_air()
 		else
 		{
 			// Handle ceiling collision
-			tile_data = player_find_ceiling(y_radius);
+			var tile_data = player_find_ceiling(y_radius);
 			if (tile_data != undefined)
 			{
 				// Flip mask and land on the ceiling

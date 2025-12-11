@@ -11,6 +11,17 @@ function player_is_falling(phase)
 			
 			// Detach from ground
 			player_ground(undefined);
+			
+			// Animate
+			switch (animation)
+			{
+				case "push":
+				{
+					player_animate("walk");
+					timeline_speed = 1 / 8;
+					break;
+				}
+			}
 			break;
 		}
 		case PHASE.STEP:
@@ -49,11 +60,7 @@ function player_is_falling(phase)
 			}
 			
 			// Straighten
-			if (image_angle != direction)
-			{
-				var diff = angle_difference(direction, image_angle);
-				image_angle += min(2.8125, abs(diff)) * sign(diff);
-			}
+			image_angle = rotate_towards(direction, image_angle);
 			break;
 		}
 		case PHASE.EXIT:

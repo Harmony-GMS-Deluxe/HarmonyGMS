@@ -54,6 +54,9 @@ gravity_direction = 0;
 local_direction = 0;
 mask_direction = 0;
 
+wall_id = noone;
+wall_sign = 0;
+
 cliff_sign = 0;
 
 solid_entities = [layer_tilemap_get_id("TilesMain")];
@@ -69,6 +72,7 @@ reaction_list = ds_list_create();
 previous_reaction_list = ds_list_create();
 
 // Input
+input_channel = -1;
 input_axis_x = 0;
 input_axis_y = 0;
 
@@ -150,10 +154,31 @@ player_resist_slope = function (force)
 	x_speed -= dsin(local_direction) * force;
 };
 
+/// @method player_radii(radius_x, radius_y, [wall_offset])
+/// @description Sets the given radii as the player's virtual mask.
+/// @param radius_x Horizontal radius to use.
+/// @param radius_y Vertical radius to use.
+/// @param [wall_offset] Wall offset to set. (Optional, default is 2.)
+function player_radii(radius_x, radius_y, wall_offset = 2)
+{
+	// Abort if radii already match
+	if (x_radius == radius_x and y_radius == radius_y) exit;
+	
+	var old_x_radius = x_radius;
+	var old_y_radius = y_radius;
+	var sine = dsin(mask_direction);
+	var cosine = dcos(mask_direction);
+	x_radius = radius_x;
+	x_wall_radius = radius_x + wall_offset;
+	y_radius = radius_y;
+	x += sine * (old_y_radius - y_radius);
+	y += cosine * (old_y_radius - y_radius);
+}
+
 /// @method player_animate(name, [reset])
 /// @description Sets the player's current animation to the given string, and their timeline to that which matches it.
 /// @param {String} name Animation to set.
-/// @param {Bool} [reset] Reset the animation.
+/// @param {Bool} [reset] Reset the animation. (Optional, default is false)
 player_animate = function (name, reset = false)
 {
 	var index = ds_map_find_value(animations, name);
