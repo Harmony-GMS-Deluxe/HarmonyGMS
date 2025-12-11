@@ -223,6 +223,7 @@
     {"id":{"name":"__InputVibrateConfig","path":"scripts/__InputVibrateConfig/__InputVibrateConfig.yy",},},
     {"id":{"name":"__InputVibrateSystem","path":"scripts/__InputVibrateSystem/__InputVibrateSystem.yy",},},
     {"id":{"name":"AudioFunctions","path":"scripts/AudioFunctions/AudioFunctions.yy",},},
+    {"id":{"name":"CollisionFunctions","path":"scripts/CollisionFunctions/CollisionFunctions.yy",},},
     {"id":{"name":"GameSetup","path":"scripts/GameSetup/GameSetup.yy",},},
     {"id":{"name":"InputBindingFind","path":"scripts/InputBindingFind/InputBindingFind.yy",},},
     {"id":{"name":"InputBindingFindCollisions","path":"scripts/InputBindingFindCollisions/InputBindingFindCollisions.yy",},},

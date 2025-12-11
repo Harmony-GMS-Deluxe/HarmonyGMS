@@ -1,4 +1,5 @@
 /// @description Debug
+if (input_channel != 0) exit;
 draw_set_font(-1);
 draw_set_halign(fa_right);
 

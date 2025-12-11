@@ -1,3 +1,24 @@
+/// @function rect([left], [top], [right], [bottom])
+/// @description Creates a rectangle with arguments assuming (0, 0) origin.
+/// @param {Real} left Left radius of the rectangle.
+/// @param {Real} top Top radius of the rectangle.
+/// @param {Real} right Right radius of the rectangle.
+/// @param {Real} bottom Bottom radius of the rectangle.
+function rect(_left = 0, _top = 0, _right = 0, _bottom = 0) constructor
+{
+	left = _left;
+	top = _top;
+	right = _right;
+	bottom = _bottom;
+    static set_size = function(_left = 0, _top = 0, _right = 0, _bottom = 0)
+    {
+        left = _left;
+        top = _top;
+        right = _right;
+        bottom = _bottom;
+    }
+}
+
 /// @function angle_wrap(ang)
 /// @description Wraps the given angle between 0 and 359 degrees inclusively.
 /// @param {Real} ang Angle to wrap.
@@ -5,6 +26,22 @@
 function angle_wrap(ang)
 {
 	return (ang mod 360 + 360) mod 360;
+}
+
+/// @function rotate_towards(dest, src, [amt])
+/// @description Rotates the source angle to the destination angle.
+/// @param {Real} dest Destination angle.
+/// @param {Real} src Source angle.
+/// @param {Real} amt The maximum amount to straighten by.
+/// @returns {Real}
+function rotate_towards(dest, src, amt = 2.8125)
+{
+	if (src != dest)
+	{
+		var diff = angle_difference(dest, src);
+		return src + min(amt, abs(diff)) * sign(diff);
+	}
+    return src;
 }
 
 /// @function instance_in_view([obj], [padding])
@@ -37,6 +74,16 @@ function particle_spawn(name, ox, oy, num = 1)
 			part_particles_create(system, ox, oy, particles[? name], num);
 		}
 	}
+}
+
+/// @function draw_reset()
+/// @description Resets draw color, alpha, and text alignment. Ported from GM8.2.
+function draw_reset()
+{
+    draw_set_color(c_white);
+    draw_set_alpha(1);
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
 }
 
 /// @function timeline_set(obj, timeline, [frames], [loop], [reset])

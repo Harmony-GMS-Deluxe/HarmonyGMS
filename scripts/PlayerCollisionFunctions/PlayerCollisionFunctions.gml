@@ -74,6 +74,26 @@ function player_ray_collision(obj, xoff, yrad)
 	return collision_line(x1, y1, x2, y2, obj, true, false) != noone;
 }
 
+/// @function player_arm_collision(obj, [xdia])
+/// @description Checks if the given entity's mask intersects a line from the player's *arm* position.
+/// @param {Asset.GMObject|Id.Instance|Id.TileMapElement} obj Object, instance or tilemap element to check.
+/// @param {Real} [xdia] Distance in pixels to extend the line horizontally on both ends (optional, default is the player's wall radius).
+/// @returns {Bool}
+function player_arm_collision(obj, xdia = x_wall_radius)
+{
+	var x_int = x div 1;
+	var y_int = y div 1;
+	var sine = dsin(mask_direction);
+	var cosine = dcos(mask_direction);
+	
+	var x1 = x_int - (cosine * xdia);
+	var y1 = y_int + (sine * xdia);
+	var x2 = x_int + (cosine * xdia);
+	var y2 = y_int - (sine * xdia);
+	
+	return shape_in_line(obj, x1, y1, x2, y2);
+}
+
 /// @function player_point_in_rectangle(obj, [x], [y])
 /// @description Checks if the given entity's rectangle intersects a point within from the player's position.
 /// @param {Asset.GMObject|Id.Instance|Id.TileMapElement} obj Object, instance or tilemap element to check.

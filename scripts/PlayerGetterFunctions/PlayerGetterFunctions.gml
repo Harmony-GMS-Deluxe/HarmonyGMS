@@ -48,6 +48,56 @@ function player_calc_tile_normal(ox, oy, rot)
 	return point_direction(sensor_x[0], sensor_y[0], sensor_x[1], sensor_y[1]) div 1;
 }
 
+/// @function player_calc_wall_distance(inst, [xrad])
+function player_calc_wall_distance(inst, xrad = x_wall_radius)
+{
+	var x_int = (x div 1)
+	var y_int = (y div 1)
+	
+	var sine = dsin(mask_direction);
+	var cosine = dcos(mask_direction);
+	
+	var final_distance = undefined;
+	
+	if (shape_in_point(inst, x div 1, y div 1))
+	{
+		for (var ox = xrad; ox < (xrad * 2); ++ox) 
+		{
+	        if (not shape_in_point(inst, x_int + (cosine * ox), y_int - (sine * ox))) 
+			{
+	            final_distance = -(xrad + ox); // right side
+	            break;
+	        } 
+			else if (not shape_in_point(inst, x_int - (cosine * ox), y_int + (sine * ox))) 
+			{
+	            final_distance = (xrad + ox); // left side
+	            break;
+	        }
+	    }
+	}
+	else
+	{
+		for (var ox = xrad; ox > -1; --ox) 
+		{
+	        if (not player_arm_collision(inst, ox)) 
+			{
+	            if (shape_in_line(inst, x_int, y_int, x_int + (cosine * (ox + 1)), y_int - (sine * (ox + 1)))) 
+				{
+	                final_distance = (xrad - ox); // right side
+	                break;
+	            } 
+				else if (shape_in_line(inst, x_int, y_int, x_int - (cosine * (ox + 1)), y_int + (sine * (ox + 1)))) 
+				{
+	                final_distance = -(xrad - ox); // left side
+	                break;
+	            }
+	        }
+	    }
+	}
+	
+	return final_distance;
+}
+
 /// @function player_detect_entities()
 /// @description Finds any instances intersecting a minimum bounding rectangle centered on the player, and executes their reaction.
 /// It also records any solid tilemaps and instances for terrain collision detection.
@@ -106,4 +156,27 @@ function player_detect_entities()
 	
 	The additional 0.5 pixels is there to address a quirk with GameMaker's collision functions where, with the exception of
 	`collision_line` and `collision_point`, the colliding shapes must intersect by at least 0.5 pixels for a collision to be registered. */
+}
+
+/// @function player_get_wall_data([xrad])
+function player_get_wall_data(xrad = x_wall_radius)
+{
+	wall_id = noone;
+	wall_sign = 0;
+	
+	var tile_data = player_find_wall();
+	
+	if (tile_data != noone)
+	{
+		var distance_to_wall = player_calc_wall_distance(tile_data, xrad);
+		var sine = dsin(mask_direction);
+		var cosine = dcos(mask_direction);
+		if (not is_undefined(distance_to_wall))
+		{
+			x += -(cosine * distance_to_wall);
+			y += (sine * distance_to_wall);
+			wall_id = tile_data;
+			wall_sign = sign(distance_to_wall);
+		}
+	}
 }
