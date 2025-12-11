@@ -7,8 +7,9 @@ state_previous = -1;
 state_changed = false;
 
 rolling = false;
-jump_action = false;
 underwater = false;
+
+jump_action = true;
 
 spindash_charge = 0;
 
@@ -16,12 +17,15 @@ spindash_charge = 0;
 rotation_lock_time = 0;
 control_lock_time = 0;
 remaining_air_time = 0;
+recovery_time = 0;
 superspeed_time = 0;
+invincibility_time = 0;
 camera_look_time = 0;
 
 slide_duration = 32;
 spring_duration = 16;
 remaining_air_duration = 1800;
+recovery_duration = 120;
 
 // Physics
 x_speed = 0;
@@ -64,22 +68,39 @@ semisolid_tilemap = layer_tilemap_get_id("TilesSemisolid");
 reaction_list = ds_list_create();
 previous_reaction_list = ds_list_create();
 
-// Animations
-animations =
+// Input
+input_axis_x = 0;
+input_axis_y = 0;
+
+/// @function button(verb)
+/// @description Creates a button struct.
+/// @param {Enum.INPUT_VERB} verb Verb to check.
+function button(verb) constructor
 {
-	idle: animSonicIdle,
-	walk: animSonicWalk,
-	run: animSonicRun,
-	roll: animSonicRoll,
-	look: animSonicLook,
-	crouch: animSonicCrouch,
-	spindash: animSonicSpindash,
-	teeter: animSonicTeeter,
-	brake: animSonicBrake
+    index = verb;
+    check = false;
+    pressed = false;
+    released = false;
+}
+
+input_button =
+{
+    jump : new button(INPUT_VERB.JUMP),
+    back : new button(INPUT_VERB.BACK),
+    extra : new button(INPUT_VERB.EXTRA),
+    start : new button(INPUT_VERB.START)
 };
 
+
+// Animations
+image_speed = 0;
+
+animations = ds_map_create();
+animation = "";
+
 // Misc.
-instance_create_layer(x, y, layer, objCamera, { gravity_direction });
+camera = instance_create_layer(x, y, "Controllers", objCamera,);
+camera.owner = id;
 
 /// @method player_perform(action, [enter])
 /// @description Sets the given function as the player's current state.
@@ -129,14 +150,36 @@ player_resist_slope = function (force)
 	x_speed -= dsin(local_direction) * force;
 };
 
-/// @method player_animate(name)
+/// @method player_animate(name, [reset])
 /// @description Sets the player's current animation to the given string, and their timeline to that which matches it.
 /// @param {String} name Animation to set.
-player_animate = function (name)
+/// @param {Bool} [reset] Reset the animation.
+player_animate = function (name, reset = false)
 {
-	animation = name;
-	timeline_index = animations[$ name];
-	timeline_position = 0;
+	var index = ds_map_find_value(animations, name);
+	if ((index != -1 and timeline_index != index) or reset)
+	{
+		animation = name;
+		timeline_set(id, index, 1, true, reset);
+	}
+};
+
+/// @method player_animating(name)
+/// @description Gets the player's current animation to check.
+/// @param {String} name Animation to check.
+/// @returns {Bool}
+player_animating = function (name)
+{
+	return animation == name;
+};
+
+/// @method player_define_animation(name, timeline)
+/// @description Sets the player's animation data.
+/// @param {String} name Animation to set.
+/// @param {Asset.GMTimeline} timeline Timeline to set.
+player_define_animation = function (name, timeline)
+{
+	animations[? name] = timeline;
 };
 
 /// @method player_gain_rings(num)

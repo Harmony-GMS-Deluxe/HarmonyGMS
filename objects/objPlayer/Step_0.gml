@@ -1,4 +1,15 @@
 /// @description Behave
+input_axis_x = InputOpposing(INPUT_VERB.LEFT, INPUT_VERB.RIGHT);
+input_axis_y = InputOpposing(INPUT_VERB.UP, INPUT_VERB.DOWN);
+
+struct_foreach(input_button, function (name, value)
+{
+    var verb = value.index;
+    value.check = InputCheck(verb);
+    value.pressed = InputPressed(verb);
+    value.released = InputReleased(verb);
+});
+
 if (script_exists(state)) 
 {
 	state(PHASE.STEP);
