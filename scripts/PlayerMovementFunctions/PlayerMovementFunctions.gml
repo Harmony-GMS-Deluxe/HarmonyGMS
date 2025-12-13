@@ -170,7 +170,6 @@ function player_move_in_air()
 			// Stop falling and exit loop
 			y_speed = 0;
 			landed = false;
-			objCamera.on_ground = true;
 			break;
 		}
 	}

@@ -1,48 +1,3 @@
-/// @function player_eject_wall(inst)
-/// @description Moves the player's virtual mask out of collision with the given wall.
-/// @param {Id.Instance|Id.TileMapElement} inst Instance or tilemap element to eject from.
-/// @returns {Real|Undefined} Sign of the wall from the player, or undefined on failure to reposition.
-function player_eject_wall(inst)
-{
-	var sine = dsin(mask_direction);
-	var cosine = dcos(mask_direction);
-	var inside = collision_point(x div 1, y div 1, inst, true, false) != noone;
-	
-	for (var ox = 1; ox <= x_wall_radius; ++ox)
-	{
-		if (not inside)
-		{
-			// Left of the wall
-			if (player_ray_collision(inst, ox, 0))
-			{
-				x -= cosine * (x_wall_radius - ox + 1);
-				y += sine * (x_wall_radius - ox + 1);
-				return 1;
-			}
-			else if (player_ray_collision(inst, -ox, 0)) // Right of the wall
-			{
-				x += cosine * (x_wall_radius - ox + 1);
-				y -= sine * (x_wall_radius - ox + 1);
-				return -1;
-			}
-		}
-		else if (not player_ray_collision(inst, ox, 0)) // Right of the wall
-		{
-			x += cosine * (x_wall_radius + ox);
-			y -= sine * (x_wall_radius + ox);
-			return -1;
-		}
-		else if (not player_ray_collision(inst, -ox, 0)) // Left of the wall
-		{
-			x -= cosine * (x_wall_radius + ox);
-			y += sine * (x_wall_radius + ox);
-			return 1;
-		}
-	}
-	
-	return undefined;
-}
-
 /// @function player_resolve_angle()
 /// @description Determines the player's angle values.
 function player_resolve_angle()
@@ -111,7 +66,6 @@ function player_ground(height)
 	{
 		direction = gravity_direction;
 		mask_direction = gravity_direction;
-		objCamera.on_ground = false;
 	}
 	else
 	{
@@ -190,7 +144,7 @@ function player_in_bounds()
 		var y2 = y + x_radius;
 	}
 	
-	with (objCamera)
+	with (camera)
 	{
 		var left = bound_left;
 		var top = bound_top;

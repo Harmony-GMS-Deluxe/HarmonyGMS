@@ -19,13 +19,44 @@ function rect(_left = 0, _top = 0, _right = 0, _bottom = 0) constructor
     }
 }
 
+/// @description Checks if the given 'value' is between the 'minimum' and the 'maximum', exclusively
+/// @argument {real} value number to evaluate
+/// @argument {real} minimum minimum value
+/// @argument {real} maximum maximum value
+/// @returns {boolean}
+function between(value, minimum, maximum)
+{
+	return (value > minimum and value < maximum);
+}
+
+/// @description Checks if the given 'value' is between the 'minimum' and the 'maximum', inclusively
+/// @argument {real} value number to evaluate
+/// @argument {real} minimum minimum value
+/// @argument {real} maximum maximum value
+/// @returns {boolean}
+function includes(value, minimum, maximum)
+{
+	return (value >= minimum and value <= maximum);
+}
+
+/// @description Returns 'value' wrapped between minimum and maximum
+/// @argument {real} value number to wrap
+/// @argument {real} minimum minimum value
+/// @argument {real} maximum maximum value
+/// @returns {real}
+function range_mod(value, minimum, maximum)
+{
+	return ((value < minimum) ? (maximum - (minimum - value)) 
+	: (minimum + (value - minimum))) mod (maximum - minimum);
+}
+
 /// @function angle_wrap(ang)
 /// @description Wraps the given angle between 0 and 359 degrees inclusively.
 /// @param {Real} ang Angle to wrap.
 /// @returns {Real}
 function angle_wrap(ang)
 {
-	return (ang mod 360 + 360) mod 360;
+	return range_mod(ang, 0, 360);
 }
 
 /// @function rotate_towards(dest, src, [amt])
@@ -42,21 +73,6 @@ function rotate_towards(dest, src, amt = 2.8125)
 		return src + min(amt, abs(diff)) * sign(diff);
 	}
     return src;
-}
-
-/// @function instance_in_view([obj], [padding])
-/// @description Checks if the given instance is visible within the game view.
-/// @param {Asset.GMObject|Id.Instance} [obj] Object or instance to check (optional, default is the calling instance).
-/// @param {Real} [padding] Distance in pixels to extend the size of the view when checking (optional, default is the CAMERA_PADDING macro).
-/// @returns {Bool}
-function instance_in_view(obj = id, padding = CAMERA_PADDING)
-{
-	var left = camera_get_view_x(CAMERA_ID);
-	var top = camera_get_view_y(CAMERA_ID);
-	var right = left + CAMERA_WIDTH;
-	var bottom = top + CAMERA_HEIGHT;
-	
-	with (obj) return point_in_rectangle(x, y, left - padding, top - padding, right + padding, bottom + padding);
 }
 
 /// @function particle_spawn(name, x, y, [num])
@@ -84,6 +100,13 @@ function draw_reset()
     draw_set_alpha(1);
     draw_set_halign(fa_left);
     draw_set_valign(fa_top);
+}
+
+/// @function draw_self_floored()
+/// @description Draws the instance at a floored position. Ported from GM8.2.
+function draw_self_floored()
+{
+    if (sprite_exists(sprite_index)) draw_sprite_ext(sprite_index, image_index, x div 1, y div 1, image_xscale, image_yscale, image_angle, image_blend, image_alpha);
 }
 
 /// @function timeline_set(obj, timeline, [frames], [loop], [reset])

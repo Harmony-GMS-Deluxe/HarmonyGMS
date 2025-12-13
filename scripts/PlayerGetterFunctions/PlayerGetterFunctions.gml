@@ -48,8 +48,12 @@ function player_calc_tile_normal(ox, oy, rot)
 	return point_direction(sensor_x[0], sensor_y[0], sensor_x[1], sensor_y[1]) div 1;
 }
 
-/// @function player_calc_wall_distance(inst, [xrad])
-function player_calc_wall_distance(inst, xrad = x_wall_radius)
+/// @function player_calc_wall_distance(inst, [xdia])
+/// @description Calculates the wall distance of the given collision data. Ported from Sonic for GMS.
+/// @param {Id.Instance|Id.TileMapElement} inst Instance or tilemap element to get distance from.
+/// @param {Real} [xdia] Distance in pixels to extend the line horizontally on both ends (optional, default is the player's wall radius).
+/// @returns {Real|Undefined} Final calculated distance of the wall from the player, or undefined on failure to find a wall.
+function player_calc_wall_distance(inst, xdia = x_wall_radius)
 {
 	var x_int = (x div 1)
 	var y_int = (y div 1)
@@ -59,36 +63,36 @@ function player_calc_wall_distance(inst, xrad = x_wall_radius)
 	
 	var final_distance = undefined;
 	
-	if (shape_in_point(inst, x div 1, y div 1))
+	if (shape_in_point(inst, x_int, y_int))
 	{
-		for (var ox = xrad; ox < (xrad * 2); ++ox) 
+		for (var ox = xdia; ox < (xdia * 2); ++ox) 
 		{
 	        if (not shape_in_point(inst, x_int + (cosine * ox), y_int - (sine * ox))) 
 			{
-	            final_distance = -(xrad + ox); // right side
+	            final_distance = -(xdia + ox); // right side
 	            break;
 	        } 
 			else if (not shape_in_point(inst, x_int - (cosine * ox), y_int + (sine * ox))) 
 			{
-	            final_distance = (xrad + ox); // left side
+	            final_distance = (xdia + ox); // left side
 	            break;
 	        }
 	    }
 	}
 	else
 	{
-		for (var ox = xrad; ox > -1; --ox) 
+		for (var ox = xdia; ox > -1; --ox) 
 		{
 	        if (not player_arm_collision(inst, ox)) 
 			{
 	            if (shape_in_line(inst, x_int, y_int, x_int + (cosine * (ox + 1)), y_int - (sine * (ox + 1)))) 
 				{
-	                final_distance = (xrad - ox); // right side
+	                final_distance = (xdia - ox); // right side
 	                break;
 	            } 
 				else if (shape_in_line(inst, x_int, y_int, x_int - (cosine * (ox + 1)), y_int + (sine * (ox + 1)))) 
 				{
-	                final_distance = -(xrad - ox); // left side
+	                final_distance = -(xdia - ox); // left side
 	                break;
 	            }
 	        }
@@ -103,6 +107,10 @@ function player_calc_wall_distance(inst, xrad = x_wall_radius)
 /// It also records any solid tilemaps and instances for terrain collision detection.
 function player_detect_entities()
 {
+	// Delist zone objects
+	static starting_object_count = array_length(object_entities);
+	array_resize(object_entities, starting_object_count);
+	
 	// Delist solid zone objects
 	array_resize(solid_entities, tilemap_count);
 	
@@ -117,32 +125,33 @@ function player_detect_entities()
 		else if (valid) array_pop(solid_entities);
 	}
 	
-	// Setup bounding rectangle
-	var x_int = x div 1;
-	var y_int = y div 1;
+	// Setup X and Y radii
 	var xrad = x_wall_radius + 0.5;
 	var yrad = y_radius + y_tile_reach + 0.5;
 	
-	// Detect instances intersecting the rectangle
-	static zone_objects = ds_list_create();
-	ds_list_clear(zone_objects);
-	
-	var total_objects = (mask_direction mod 180 == 0 ?
-		collision_rectangle_list(x_int - xrad, y_int - yrad, x_int + xrad, y_int + yrad, objZoneObject, true, false, zone_objects, false) :
-		collision_rectangle_list(x_int - yrad, y_int - xrad, x_int + yrad, y_int + xrad, objZoneObject, true, false, zone_objects, false));
+	// Count total objects
+	var total_objects = instance_number(objZoneObject);
 	
 	// Execute the reaction of all instances
 	if (total_objects > 0)
 	{
 		for (var n = 0; n < total_objects; ++n)
 		{
-			var inst = zone_objects[| n];
+			var inst = instance_find(objZoneObject, n);
 			
-			// Register solid instances; skip the current instance if...
-			if (not (instance_exists(inst) and object_is_ancestor(inst.object_index, objSolid))) continue; // It has been destroyed after its reaction, or is not solid
-			if (inst.semisolid and player_beam_collision(inst)) continue; // Passing through
+			if (instance_exists(inst) and player_collision_ext(inst, xrad, yrad))
+			{
+				// Register general instances.
+				array_push(object_entities, inst);
 			
-			array_push(solid_entities, inst);
+				// Register solid instances
+				if (object_is_ancestor(inst.object_index, objSolid))
+				{
+					// Skip the current instance if passing through
+					if (inst.semisolid and player_beam_collision(inst)) continue;
+					array_push(solid_entities, inst);
+				}
+			}
 		}
 	}
 	

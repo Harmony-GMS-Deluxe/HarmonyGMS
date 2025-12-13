@@ -3,7 +3,7 @@ image_speed = 0;
 reaction_test = function (inst)
 {
 	// Check if the player is within the water.
-	if (player_point_in_rectangle(inst, x div 1, y div 1))
+	if (player_point_in_rectangle(inst))
 	{
 		player_react_to(inst);
 	}
@@ -18,7 +18,7 @@ reaction_on_enter = function (inst)
 		player_refresh_physics();
 		y_speed *= 0.25;
 		
-		if (not player_point_in_rectangle(inst, xprevious div 1, yprevious div 1))
+		if (not player_point_in_rectangle(inst, xprevious, yprevious))
 		{
 			particle_spawn("splash", x div 1, inst.bbox_top);
 		}
@@ -31,13 +31,13 @@ reaction_on_exit = function (inst)
 	if (underwater)
 	{
 		// Reset all reactions
-		var total_reactions = ds_list_size(reaction_list);
+		var total_reactions = array_length(reactions);
 		
 		if (total_reactions > 0)
 		{
 			for (var n = 0; n < total_reactions; ++n)
 			{
-				var index = reaction_list[| n];
+				var index = array_get(reactions, n);
 				if (instance_exists(index))
 				{
 					if (index.object_index == objWater or 

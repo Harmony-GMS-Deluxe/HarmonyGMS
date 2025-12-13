@@ -22,6 +22,9 @@ function player_is_falling(phase)
 					break;
 				}
 			}
+			
+			// Direct Camera
+			player_cam_direct(player_cam_is_aerial);
 			break;
 		}
 		case PHASE.STEP:
@@ -96,6 +99,9 @@ function player_is_jumping(phase)
 			
 			// Sound
 			sound_play(sfxJump);
+			
+			// Direct Camera
+			player_cam_direct(player_cam_is_aerial);
 			break;
 		}
 		case PHASE.STEP:
