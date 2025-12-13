@@ -31,13 +31,13 @@ reaction_on_exit = function (inst)
 	if (underwater)
 	{
 		// Reset all reactions
-		var total_reactions = array_length(reactions);
+		var total_reactions = ds_list_size(reaction_list);
 		
 		if (total_reactions > 0)
 		{
 			for (var n = 0; n < total_reactions; ++n)
 			{
-				var index = array_get(reactions, n);
+				var index = reaction_list[| n];
 				if (instance_exists(index))
 				{
 					if (index.object_index == objWater or 
