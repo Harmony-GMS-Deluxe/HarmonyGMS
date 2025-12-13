@@ -5,7 +5,7 @@ function player_find_wall()
 {
 	var n = array_find_index(solid_entities, function (inst)
 	{
-		return player_beam_collision(inst);
+		return player_arms_collision(inst, x_wall_radius);
 	});
 	
 	return (n != -1 ? solid_entities[n] : noone);
@@ -26,6 +26,44 @@ function player_find_floor(radius)
 	}
 	
 	return undefined;
+}
+
+/// @function player_find_cliff()
+/// @returns {Real}
+function player_find_cliff()
+{
+	cliff_sign = 0;
+	var total_solids = array_length(solid_entities);
+	var center = noone;
+	var left = noone;
+	var right = noone;
+	var height = y_radius + y_tile_reach;
+	
+	if (total_solids > 0)
+	{
+		for (var n = 0; n < total_solids; ++n)
+		{
+			var inst = solid_entities[n];
+			if (player_ray_collision(inst, 0, height))
+			{
+				center = inst;
+			}
+			else if (player_ray_collision(inst, -x_radius, height))
+			{
+				left = inst;
+			}
+			else if (player_ray_collision(inst, x_radius, height))
+			{
+				right = inst;
+			}
+		}
+	}
+	
+	if (center == noone and (left != noone xor right != noone))
+	{
+		if (left) cliff_sign = 1;
+		if (right) cliff_sign = -1;
+	}
 }
 
 /* TODO: since GameMaker's collision functions accept an array of entities to check against for collision,

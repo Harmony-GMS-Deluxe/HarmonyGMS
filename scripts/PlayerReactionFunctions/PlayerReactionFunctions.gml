@@ -32,7 +32,7 @@ function player_test_reactions()
 	{
 		for (var n = 0; n < total_objects; ++n)
 		{
-			var inst = array_get(object_entities, n);
+			var inst = object_entities[n];
 			
 			if (instance_exists(inst) and ds_list_find_index(reaction_list, inst) == -1)
 			{
