@@ -83,7 +83,7 @@ function player_calc_wall_distance(inst, xdia = x_wall_radius)
 	{
 		for (var ox = xdia; ox > -1; --ox) 
 		{
-	        if (not player_arm_collision(inst, ox)) 
+	        if (not player_arms_collision(inst, ox)) 
 			{
 	            if (shape_in_line(inst, x_int, y_int, x_int + (cosine * (ox + 1)), y_int - (sine * (ox + 1)))) 
 				{

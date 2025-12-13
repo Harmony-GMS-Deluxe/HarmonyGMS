@@ -172,5 +172,8 @@ function player_move_in_air()
 			landed = false;
 			break;
 		}
+		
+		// Handle wall collision
+		player_get_wall_data();
 	}
 }

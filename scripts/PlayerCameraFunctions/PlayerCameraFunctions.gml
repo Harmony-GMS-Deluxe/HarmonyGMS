@@ -64,7 +64,9 @@ function player_cam_is_normal()
 function player_cam_is_grounded()
 {
 	var speed_h = x_speed * (lag_time <= 0);
-	var speed_v = min(min_y_speed + abs(owner.y - owner.yprevious), y_speed);
+	var owner_y_int = owner.y div 1;
+	var owner_yprevious_int = owner.yprevious div 1;
+	var speed_v = min(min_y_speed + abs(owner_y_int - owner_yprevious_int), y_speed);
 	var border_x = camera_get_view_border_x(CAMERA_ID);
 	var border_y = (CAMERA_HEIGHT * 0.5);
 	camera_set_view_speed(CAMERA_ID, speed_h, speed_v);

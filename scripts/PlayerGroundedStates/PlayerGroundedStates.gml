@@ -30,13 +30,7 @@ function player_is_standing(phase)
 			rolling = false;
 			
 			// Check if standing on a cliff
-			cliff_sign = 0;
-			var height = y_radius + y_tile_reach;
-			if (not player_ray_collision(solid_entities, 0, height))
-			{
-				cliff_sign = player_ray_collision(solid_entities, -x_radius, height) -
-					player_ray_collision(solid_entities, x_radius, height);
-			}
+			player_find_cliff();
 			
 			// Animate
 			player_animate(cliff_sign != 0 ? "teeter" : "idle");
