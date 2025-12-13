@@ -1,7 +1,7 @@
 /// @function shape_in_point(shape, x, y)
 function shape_in_point(shape, px, py)
 {
-	return (collision_point(px, py, shape, true, true) != noone);
+	return (collision_point(px, py, shape, true, false) != noone);
 }
 
 

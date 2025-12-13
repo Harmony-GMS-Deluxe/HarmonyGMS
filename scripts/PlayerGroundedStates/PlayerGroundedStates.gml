@@ -41,6 +41,9 @@ function player_is_standing(phase)
 			// Animate
 			player_animate(cliff_sign != 0 ? "teeter" : "idle");
 			image_angle = gravity_direction;
+			
+			// Direct Camera
+			player_cam_direct(player_cam_is_normal);
 			break;
 		}
 		case PHASE.STEP:
@@ -94,6 +97,9 @@ function player_is_running(phase)
 		case PHASE.ENTER:
 		{
 			rolling = false;
+			
+			// Direct Camera
+			player_cam_direct(player_cam_is_normal);
 			break;
 		}
 		case PHASE.STEP:
@@ -200,6 +206,9 @@ function player_is_braking(phase)
 			
 			player_animate("brake");
 			image_angle = gravity_direction;
+			
+			// Direct Camera
+			player_cam_direct(player_cam_is_normal);
 			break;
 		}
 		case PHASE.STEP:
@@ -301,8 +310,10 @@ function player_is_looking(phase)
 	{
 		case PHASE.ENTER:
 		{
-			camera_look_time = 120;
 			player_animate("look");
+			
+			player_cam_direct(player_cam_is_looking)
+			with (camera) look_time = default_look_time;
 			break;
 		}
 		case PHASE.STEP:
@@ -332,16 +343,6 @@ function player_is_looking(phase)
 			
 			// Stand
 			if (input_axis_y != -1) return player_perform(player_is_standing);
-			
-			// Ascend camera
-			if (camera_look_time > 0)
-			{
-				--camera_look_time;
-			}
-			else with (objCamera)
-			{
-				if (y_offset > -104) y_offset -= 2;
-			}
 			break;
 		}
 		case PHASE.EXIT:
@@ -358,8 +359,9 @@ function player_is_crouching(phase)
 	{
 		case PHASE.ENTER:
 		{
-			camera_look_time = 120;
 			player_animate("crouch");
+			player_cam_direct(player_cam_is_crouching)
+			with (camera) look_time = default_look_time;
 			break;
 		}
 		case PHASE.STEP:
@@ -389,16 +391,6 @@ function player_is_crouching(phase)
 			
 			// Stand
 			if (input_axis_y != 1) return player_perform(player_is_standing);
-			
-			// Descend camera
-			if (camera_look_time > 0)
-			{
-				--camera_look_time;
-			}
-			else with (objCamera)
-			{
-				if (y_offset < 88) y_offset += 2;
-			}
 			break;
 		}
 		case PHASE.EXIT:
@@ -420,6 +412,9 @@ function player_is_pushing(phase)
 			// TODO: Add in a pushing animation
 			player_animate("idle");
 			image_angle = gravity_direction;
+			
+			// Direct Camera
+			player_cam_direct(player_cam_is_normal);
 			break;
 		}
 		case PHASE.STEP:
@@ -491,6 +486,9 @@ function player_is_rolling(phase)
 			rolling = true;
 			player_animate("roll");
 			image_angle = gravity_direction;
+			
+			// Direct Camera
+			player_cam_direct(player_cam_is_normal);
 			break;
 		}
 		case PHASE.STEP:
@@ -566,6 +564,9 @@ function player_is_spindashing(phase)
 			spindash_charge = 0;
 			player_animate("spindash");
 			sound_play(sfxSpinRev);
+			
+			// Direct Camera
+			player_cam_direct(player_cam_is_normal);
 			break;
 		}
 		case PHASE.STEP:
@@ -591,7 +592,9 @@ function player_is_spindashing(phase)
 			if (input_axis_y != 1)
 			{
 				x_speed = image_xscale * (8 + spindash_charge div 2);
-				objCamera.alarm[0] = 16;
+				
+				with (camera) lag_time = floor(24 - abs(other.x_speed));
+				
 				audio_stop_sound(sfxSpinRev);
 				sound_play(sfxSpinDash);
 				return player_perform(player_is_rolling);

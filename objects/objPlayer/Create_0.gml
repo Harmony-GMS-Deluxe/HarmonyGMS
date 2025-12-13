@@ -19,7 +19,6 @@ remaining_air_time = 0;
 recovery_time = 0;
 superspeed_time = 0;
 invincibility_time = 0;
-camera_look_time = 0;
 
 slide_duration = 32;
 spring_duration = 16;
@@ -58,6 +57,9 @@ wall_sign = 0;
 
 cliff_sign = 0;
 
+linked_object_id = noone;
+
+object_entities = [];
 solid_entities = [layer_tilemap_get_id("TilesMain")];
 if (layer_exists("TilesLayer0"))
 {
@@ -97,11 +99,12 @@ input_button =
 // Animations
 image_speed = 0;
 
-animations = ds_map_create();
+animation_data = [];
+total_animations = 0;
 animation = "";
 
 // Misc.
-camera = instance_create_layer(x, y, "Controllers", objCamera,);
+camera = instance_create_layer(x, y, "Controllers", objPlayerCamera);
 camera.owner = id;
 
 /// @method player_perform(action, [enter])
@@ -180,11 +183,24 @@ function player_radii(radius_x, radius_y, wall_offset = 2)
 /// @param {Bool} [reset] Reset the animation. (Optional, default is false)
 player_animate = function (name, reset = false)
 {
-	var index = ds_map_find_value(animations, name);
-	if ((index != -1 and timeline_index != index) or reset)
+	// Get Animation Data
+	for (var i = 0; i < total_animations; ++i;)
 	{
-		animation = name;
-		timeline_set(id, index, 1, true, reset);
+		// Check if the provided animation name is in.
+		if (array_contains(animation_data[i], name))
+		{
+			// Get the array data needed
+			var anim_data_name = array_get(animation_data[i], 0);
+			var anim_data_timeline = array_get(animation_data[i], 1);
+			
+			// Check if the animation name and timeline index do not match up.
+			if ((animation != anim_data_name and timeline_index != anim_data_timeline) or reset)
+			{
+				// Set the animation accordingly
+				animation = anim_data_name;
+				timeline_set(id, anim_data_timeline, 1, true, reset);
+			}
+		}
 	}
 };
 
@@ -203,7 +219,8 @@ player_animating = function (name)
 /// @param {Asset.GMTimeline} timeline Timeline to set.
 player_define_animation = function (name, timeline)
 {
-	animations[? name] = timeline;
+	animation_data[total_animations] = [name, timeline];
+	total_animations++;
 };
 
 /// @method player_gain_rings(num)

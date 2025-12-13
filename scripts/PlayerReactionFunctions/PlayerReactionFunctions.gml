@@ -24,24 +24,15 @@ function player_trigger_reactions()
 
 function player_test_reactions()
 {
-	// Setup bounding rectangle
-	var x_int = x div 1;
-	var y_int = y div 1;
-	var xdia = x_wall_radius + 0.5;
-	var ydia = y_radius + y_tile_reach + 0.5;
-	
-	// Detect instances intersecting the rectangle
-	var zone_objects = ds_list_create();
-	var total_objects = (mask_direction mod 180 != 0 ?
-		collision_rectangle_list(x_int - ydia, y_int - xdia, x_int + ydia, y_int + xdia, objZoneObject, true, false, zone_objects, false) :
-		collision_rectangle_list(x_int - xdia, y_int - ydia, x_int + xdia, y_int + ydia, objZoneObject, true, false, zone_objects, false));
+	// Get total object entities
+	var total_objects = array_length(object_entities);
 		
 	// Execute the test reaction of all instances
 	if (total_objects > 0)
 	{
 		for (var n = 0; n < total_objects; ++n)
 		{
-			var inst = zone_objects[| n];
+			var inst = array_get(object_entities, n);
 			
 			if (instance_exists(inst) and ds_list_find_index(reaction_list, inst) == -1)
 			{

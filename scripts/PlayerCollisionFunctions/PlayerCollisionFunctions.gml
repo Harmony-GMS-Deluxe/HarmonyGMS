@@ -12,6 +12,22 @@ function player_collision(obj)
 		collision_rectangle(x_int - x_radius, y_int - y_radius, x_int + x_radius, y_int + y_radius, obj, true, false) != noone);
 }
 
+/// @function player_collision_ext(obj, xrad, yrad)
+/// @description Checks if the given entity's mask intersects the player's virtual mask.
+/// @param {Asset.GMObject|Id.Instance|Id.TileMapElement} obj Object, instance or tilemap element to check.
+/// @param {Real} xrad Distance in pixels to extend the player's mask horizontally.
+/// @param {Real} yrad Distance in pixels to extend the player's mask vertically.
+/// @returns {Bool}
+function player_collision_ext(obj, xrad, yrad)
+{
+	var x_int = x div 1;
+	var y_int = y div 1;
+	
+	return (mask_direction mod 180 != 0 ?
+		collision_rectangle(x_int - yrad, y_int - xrad, x_int + yrad, y_int + xrad, obj, true, false) != noone :
+		collision_rectangle(x_int - xrad, y_int - yrad, x_int + xrad, y_int + yrad, obj, true, false) != noone);
+}
+
 /// @function player_part_collision(obj, yrad)
 /// @description Checks if the given entity's mask intersects a vertical portion of the player's virtual mask.
 /// @param {Asset.GMObject|Id.Instance|Id.TileMapElement} obj Object, instance or tilemap element to check.
@@ -97,15 +113,18 @@ function player_arm_collision(obj, xdia = x_wall_radius)
 /// @function player_point_in_rectangle(obj, [x], [y])
 /// @description Checks if the given entity's rectangle intersects a point within from the player's position.
 /// @param {Asset.GMObject|Id.Instance|Id.TileMapElement} obj Object, instance or tilemap element to check.
-/// @param {Real} x Horizontal position in pixels (Optional, defaults is the player's floored x position.)
-/// @param {Real} y Vertical position in pixels (Optional, defaults is the player's floored y position.)
+/// @param {Real} x Horizontal position in pixels (Optional, defaults is the player's x position.)
+/// @param {Real} y Vertical position in pixels (Optional, defaults is the player's y position.)
 /// @returns {Bool}
-function player_point_in_rectangle(obj, pos_x = x div 1, pos_y = y div 1)
+function player_point_in_rectangle(obj, pos_x = x, pos_y = y)
 {
+	var x_int = pos_x div 1;
+	var y_int = pos_y div 1;
+	
 	var x1 = obj.bbox_left;
 	var y1 = obj.bbox_top;
 	var x2 = obj.bbox_right;
 	var y2 = obj.bbox_bottom;
 	
-	return point_in_rectangle(pos_x, pos_y, x1, y1, x2, y2);
+	return point_in_rectangle(x_int, y_int, x1, y1, x2, y2);
 }
