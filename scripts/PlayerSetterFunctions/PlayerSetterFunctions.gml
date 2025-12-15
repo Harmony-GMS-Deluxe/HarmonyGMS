@@ -28,7 +28,7 @@ function player_resolve_angle()
 		var diff = abs(angle_difference(perp_dir, direction)); // Difference between normal and current angle
 		
 		// If the difference is too steep, do not snap down to the ground, and abort
-		if (diff > 45 and diff < 90)
+		if (between(diff, 45, 90))
 		{
 			ground_snap = false;
 			exit;

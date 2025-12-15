@@ -19,6 +19,15 @@ function rect(_left = 0, _top = 0, _right = 0, _bottom = 0) constructor
     }
 }
 
+/// @description Returns 'value' rounded to the nearest multiple of 'factor'
+/// @argument {real} value number to round
+/// @argument {real} factor multiplier
+/// @returns {real}
+function round_to(value, factor)
+{
+	return round(value / factor) * factor;
+}
+
 /// @description Checks if the given 'value' is between the 'minimum' and the 'maximum', exclusively
 /// @argument {real} value number to evaluate
 /// @argument {real} minimum minimum value

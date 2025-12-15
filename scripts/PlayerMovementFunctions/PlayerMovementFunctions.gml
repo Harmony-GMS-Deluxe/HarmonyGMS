@@ -37,7 +37,7 @@ function player_move_on_ground()
 		player_trigger_reactions();
 		
 		// Handle wall collision
-		player_get_wall_data();
+		player_get_wall_data(x_wall_radius);
 		if (wall_id != noone)
 		{
 			if (sign(x_speed) == wall_sign)
@@ -90,7 +90,7 @@ function player_move_in_air()
 		player_trigger_reactions();
 		
 		// Handle wall collision
-		player_get_wall_data();
+		player_get_wall_data(x_wall_radius);
 		if (wall_id != noone)
 		{
 			if (sign(x_speed) == wall_sign)
@@ -174,6 +174,6 @@ function player_move_in_air()
 		}
 		
 		// Handle wall collision
-		player_get_wall_data();
+		player_get_wall_data(x_wall_radius);
 	}
 }

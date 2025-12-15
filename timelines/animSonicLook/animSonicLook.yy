@@ -8,7 +8,7 @@
   "name":"animSonicLook",
   "parent":{
     "name":"Sonic",
-    "path":"folders/Timelines/Sonic.yy",
+    "path":"folders/Timelines/Zone/Player/Sonic.yy",
   },
   "resourceType":"GMTimeline",
   "resourceVersion":"2.0",

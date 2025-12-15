@@ -84,12 +84,10 @@ function player_find_ceiling(radius)
 			var inst = solid_entities[n];
 			
 			// Skip the solid if passing through it
-			if (inst == semisolid_tilemap or (instance_exists(inst) and inst.semisolid) or not player_beam_collision(inst, x_radius, -oy))
+			if ((inst != semisolid_tilemap or (instance_exists(inst) and not inst.semisolid)) and player_upper_collision(inst, -oy))
 			{
-				continue;
+				return oy;
 			}
-			
-			return oy;
 		}
 	}
 	

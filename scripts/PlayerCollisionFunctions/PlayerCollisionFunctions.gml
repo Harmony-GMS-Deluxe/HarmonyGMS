@@ -40,10 +40,28 @@ function player_part_collision(obj, ylen)
 	var sine = dsin(mask_direction);
 	var cosine = dcos(mask_direction);
 	
-	var x1 = x_int - cosine * x_radius;
-	var y1 = y_int + sine * x_radius;
-	var x2 = x_int + cosine * x_radius + sine * ylen;
-	var y2 = y_int - sine * x_radius + cosine * ylen;
+	var x1 = x_int - (cosine * x_radius);
+	var y1 = y_int + (sine * x_radius);
+	var x2 = x_int + (cosine * x_radius) + (sine * ylen);
+	var y2 = y_int - (sine * x_radius) + (cosine * ylen);
+	
+	return collision_rectangle(x1, y1, x2, y2, obj, true, false) != noone;
+}
+
+/// @param {Asset.GMObject|Id.Instance|Id.TileMapElement} obj Object, instance or tilemap element to check.
+/// @param {Real} ylen Distance in pixels to extend the player's mask vertically.
+/// @returns {Bool}
+function player_upper_collision(obj, ylen)
+{
+	var x_int = x div 1;
+	var y_int = y div 1;
+	var sine = dsin(mask_direction);
+	var cosine = dcos(mask_direction);
+	
+	var x1 = x_int - (cosine * x_radius) - (sine * ylen);
+	var y1 = y_int + (sine * x_radius) - (cosine * ylen);
+	var x2 = x_int + (cosine * x_radius);
+	var y2 = y_int - (sine * x_radius);
 	
 	return collision_rectangle(x1, y1, x2, y2, obj, true, false) != noone;
 }

@@ -9,8 +9,8 @@
   "name":"objRing",
   "overriddenProperties":[],
   "parent":{
-    "name":"General",
-    "path":"folders/Objects/Zone/General.yy",
+    "name":"Rings",
+    "path":"folders/Objects/Zone/General/Rings.yy",
   },
   "parentObjectId":{
     "name":"objZoneObject",

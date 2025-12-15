@@ -167,8 +167,8 @@ function player_detect_entities()
 	`collision_line` and `collision_point`, the colliding shapes must intersect by at least 0.5 pixels for a collision to be registered. */
 }
 
-/// @function player_get_wall_data([xrad])
-function player_get_wall_data(xrad = x_wall_radius)
+/// @function player_get_wall_data(xrad)
+function player_get_wall_data(xrad)
 {
 	wall_id = noone;
 	wall_sign = 0;
