@@ -1,2 +1,2 @@
-/// @description Loop
-timeline_position = 312;
+/// @description Set frame
+image_index = 5;

@@ -38,7 +38,6 @@ function player_is_standing(phase)
 			
 			// Animate
 			player_animate(cliff_sign != 0 ? "teeter" : "idle");
-			timeline_speed = 1;
 			image_angle = gravity_direction;
 			break;
 		}
@@ -101,7 +100,6 @@ function player_is_running(phase)
 			
 			// Handle ground motion
 			var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
-			var can_brake = (animation == "brake");
 			
 			if (control_lock_time == 0)
 			{
@@ -110,15 +108,24 @@ function player_is_running(phase)
 					// If moving in the opposite direction...
 					if (x_speed != 0 and sign(x_speed) != input_sign)
 					{
+						// Brake immediately
+						if (abs(x_speed) > 4)
+						{
+							image_xscale = -input_sign;
+							if (mask_direction == gravity_direction)
+							{
+								sound_play(sfxBrake);
+								return player_perform(player_is_braking);
+							}
+						}
+						
 						// Decelerate and reverse direction
-						can_brake = true;
 						x_speed += deceleration * input_sign;
 						if (sign(x_speed) == input_sign) x_speed = deceleration * input_sign;
 					}
 					else
 					{
 						// Accelerate
-						can_brake = false;
 						image_xscale = input_sign;
 						if (abs(x_speed) < speed_cap)
 						{
@@ -168,40 +175,118 @@ function player_is_running(phase)
 			
 			// Stand
 			if (x_speed == 0 and input_sign == 0) return player_perform(player_is_standing);
+			break;
+		}
+		case PHASE.EXIT:
+		{
+			control_lock_time = 0;
+			break;
+		}
+	}
+}
+
+/// @function player_is_braking(phase)
+function player_is_braking(phase)
+{
+	switch (phase)
+	{
+		case PHASE.ENTER:
+		{
+			rolling = false;
 			
-			// Brake
-			if (can_brake and mask_direction == gravity_direction and velocity >= 4 and animation != "brake")
-			{
-				player_animate("brake");
-				timeline_speed = 1;
-				image_angle = gravity_direction;
-				image_xscale = -input_sign;
-				sound_play(sfxBrake);
-			}
+			player_animate("brake");
+			image_angle = gravity_direction;
+			break;
+		}
+		case PHASE.STEP:
+		{
+			// Jump
+			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
 			
-			// Animate
-			if (can_brake and animation == "brake" and mask_direction == gravity_direction and timeline_position < timeline_max_moment(timeline_index))
+			// Handle ground motion
+			var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
+			
+			if (control_lock_time == 0)
 			{
-				if (timeline_position mod 4 == 0)
+				if (input_sign != 0)
 				{
-					// Kick up dust
-					var offset = y_radius - 6;
-					var ox = x + dsin(direction) * offset;
-					var oy = y + dcos(direction) * offset;
-					particle_spawn("brake_dust", ox, oy);
+					// If moving in the opposite direction...
+					if (x_speed != 0 and sign(x_speed) != input_sign)
+					{
+						// Decelerate and reverse direction
+						x_speed += deceleration * input_sign;
+						if (sign(x_speed) == input_sign)
+						{
+							x_speed = deceleration * input_sign;
+							return player_perform(player_is_running);
+						}
+					}
+					else
+					{
+						return player_perform(player_is_running);
+					}
+				}
+				else
+				{
+					// Friction
+					x_speed -= min(abs(x_speed), acceleration) * sign(x_speed);
+					
+					/* AUTHOR NOTE: the values for friction and acceleration are the same in the 16-bit Genesis games. */
 				}
 			}
-			else
+			
+			// Move
+			player_move_on_ground();
+			if (state_changed) exit;
+			
+			// Fall
+			if (not on_ground) return player_perform(player_is_falling);
+			
+			// Slide down steep slopes
+			if (abs(x_speed) < slide_threshold)
 			{
-				var new_anim = (velocity < 6 ? "walk" : "run");
-				if (animation != new_anim) player_animate(new_anim);
-				timeline_speed = 1 / max(8 - velocity div 1, 1);
-				image_angle = direction;
+				if (local_direction >= 90 and local_direction <= 270)
+				{
+					return player_perform(player_is_falling);
+				}
+				else if (local_direction >= 45 and local_direction <= 315)
+				{
+					control_lock_time = slide_duration;
+					return player_perform(player_is_running);
+				}
+			}
+			
+			// Apply slope friction
+			player_resist_slope(0.125);
+			
+			// Roll
+			var velocity = abs(x_speed);
+			if (input_sign == 0 and velocity >= 1.03125 and input_check(INPUT.DOWN))
+			{
+				sound_play(sfxRoll);
+				return player_perform(player_is_rolling);
+			}
+			
+			// Stand
+			if (x_speed == 0 and input_sign == 0) return player_perform(player_is_standing);
+			
+			// Run
+			if (timeline_expired(id)) return player_perform(player_is_running);
+			
+			// Animate
+			if (timeline_position mod 4 == 0)
+			{
+				// Kick up dust
+				var offset = y_radius - 6;
+				var ox = x + dsin(direction) * offset;
+				var oy = y + dcos(direction) * offset;
+				particle_spawn("brake_dust", ox, oy);
 			}
 			break;
 		}
 		case PHASE.EXIT:
 		{
+			control_lock_time = 0;
 			break;
 		}
 	}
@@ -244,7 +329,11 @@ function player_is_looking(phase)
 			if (x_speed != 0) return player_perform(player_is_running);
 			
 			// Stand
-			if (not input_check(INPUT.UP)) return player_perform(player_is_standing);
+			if (not input_check(INPUT.UP)) 
+			{
+				if (current_animation != "look_end") player_animate("look_end");
+				else if (timeline_expired(id)) return player_perform(player_is_standing);
+			}
 			
 			// Ascend camera
 			if (camera_look_time > 0)
@@ -301,7 +390,11 @@ function player_is_crouching(phase)
 			if (x_speed != 0) return player_perform(player_is_running);
 			
 			// Stand
-			if (not input_check(INPUT.DOWN)) return player_perform(player_is_standing);
+			if (not input_check(INPUT.DOWN)) 
+			{
+				if (current_animation != "crouch_end") player_animate("crouch_end");
+				else if (timeline_expired(id)) return player_perform(player_is_standing);
+			}
 			
 			// Descend camera
 			if (camera_look_time > 0)
@@ -330,6 +423,7 @@ function player_is_rolling(phase)
 		{
 			rolling = true;
 			player_animate("roll");
+			timeline_speed = 1 / max(5 - abs(x_speed) div 1, 1);
 			image_angle = gravity_direction;
 			break;
 		}
