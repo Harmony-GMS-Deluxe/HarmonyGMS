@@ -1,6 +1,9 @@
 /// @description Behave
-state(PHASE.STEP);
-if (state_changed) state_changed = false;
+if (script_exists(state)) 
+{
+    state(PHASE.STEP);
+    if (state_changed) state_changed = false;
+}
 
 // Direct camera
 with (objCamera)

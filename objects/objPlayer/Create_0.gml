@@ -3,6 +3,7 @@ image_speed = 0;
 
 // State machine
 state = player_is_ready;
+state_previous = -1;
 state_changed = false;
 
 rolling = false;
@@ -75,32 +76,26 @@ if (tilemap_count == 3)
 }
 
 // Animations
-animations =
-{
-	idle: animSonicIdle,
-	walk: animSonicWalk,
-	run: animSonicRun,
-	roll: animSonicRoll,
-	look: animSonicLook,
-	crouch: animSonicCrouch,
-	spindash: animSonicSpindash,
-	teeter: animSonicTeeter,
-	brake: animSonicBrake,
-	hurt: animSonicHurt
-};
+animations = ds_map_create();
+current_animation = "";
 
 // Misc.
 instance_create_layer(x, y, layer, objCamera, { gravity_direction });
 
-/// @method player_perform(action)
+/// @method player_perform(action, [reset])
 /// @description Sets the given function as the player's current state.
 /// @param {Function} action State function to set.
-player_perform = function (action)
+/// @param {Boolean} [reset] Reset state function.
+player_perform = function (action, reset = false)
 {
-	state(PHASE.EXIT);
-	state = action;
-	state_changed = true;
-	state(PHASE.ENTER);
+	if (state != action or reset)
+	{
+		state_previous = state;
+		state = action;
+		state_changed = true;
+		if (script_exists(state_previous)) state_previous(PHASE.EXIT);
+		if (script_exists(state)) state(PHASE.ENTER);
+	}
 };
 
 /// @method player_rotate_mask()
@@ -134,14 +129,27 @@ player_resist_slope = function (force)
 	x_speed -= dsin(local_direction) * force;
 };
 
-/// @method player_animate(name)
+/// @method player_animate(name, [reset])
 /// @description Sets the player's current animation to the given string, and their timeline to that which matches it.
 /// @param {String} name Animation to set.
-player_animate = function (name)
+/// @param {Boolean} [reset] Reset the animation.
+player_animate = function (name, reset = false)
 {
-	animation = name;
-	timeline_index = animations[$ name];
-	timeline_position = 0;
+	var anim_index = ds_map_find_value(animations, name);
+	if ((anim_index != -1 and timeline_index != anim_index) or reset)
+	{
+		current_animation = name;
+		timeline_set(id, anim_index, 1, true, reset);
+	}
+};
+
+/// @method player_define_animation(animation, index)
+/// @description Defines the player's animation to the given string, and their timeline to that as well.
+/// @param {String} animation Animation to define.
+/// @param {Timeline} index Timeline index to assign.
+player_define_animation = function (animation, index)
+{
+	animations[? animation] = index;
 };
 
 /// @method player_gain_score(num)
