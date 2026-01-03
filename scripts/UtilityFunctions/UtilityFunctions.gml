@@ -114,14 +114,6 @@ function timeline_set(obj, timeline, frames = 1, loop = true, reset = true)
 	}
 }
 
-/// @description Checks if any obj (or instance) has a timeline that has reached its last moment
-/// @argument {real} obj object or instance index
-/// @returns {boolean}
-function timeline_expired(obj)
-{
-	return (instance_exists(obj) and timeline_exists(obj.timeline_index) and obj.timeline_position >= timeline_max_moment(obj.timeline_index));
-}
-
 /// @function draw_reset()
 /// @description Resets draw color, alpha, and text alignment. Ported from GM8.2.
 function draw_reset()
