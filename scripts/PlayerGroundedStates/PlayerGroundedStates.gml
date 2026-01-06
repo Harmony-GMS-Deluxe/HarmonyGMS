@@ -112,17 +112,6 @@ function player_is_running(phase)
 					// If moving in the opposite direction...
 					if (x_speed != 0 and facing != input_axis_x)
 					{
-						// Brake immediately
-						if (abs(x_speed) > 4)
-						{
-							image_xscale = -input_sign;
-							if (mask_direction == gravity_direction)
-							{
-								sound_play(sfxBrake);
-								return player_perform(player_is_braking);
-							}
-						}
-						
 						// Decelerate and reverse direction
 						can_brake = true;
 						x_speed += deceleration * input_axis_x;
@@ -204,16 +193,7 @@ function player_is_running(phase)
 					particle_create(ox, oy, global.ani_brake_dust_v0);
 				}
 			}
-			
-			// Move
-			player_move_on_ground();
-			if (state_changed) exit;
-			
-			// Fall
-			if (not on_ground) return player_perform(player_is_falling);
-			
-			// Slide down steep slopes
-			if (abs(x_speed) < slide_threshold)
+			else
 			{
 				animation_init(ANIM.RUN);
 			}
