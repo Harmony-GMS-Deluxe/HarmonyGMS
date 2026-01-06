@@ -93,27 +93,6 @@ function particle_create(ox, oy, ani, xspd = 0, yspd = 0, xaccel = 0, yaccel = 0
     return particle;
 }
 
-/// @description Assigns the given timeline to the calling instance
-/// @argument {real} obj object or instance index
-/// @argument {real} timeline timeline index
-/// @argument {real} frames (Optional) timeline speed in frames
-/// @argument {boolean} loop (Optional) whether or not the timeline should repeat
-/// @argument {boolean} reset (Optional) whether or not to ignore if the same timeline is already assigned
-function timeline_set(obj, timeline, frames = 1, loop = true, reset = true)
-{
-	with (obj) 
-	{
-		if (timeline_index != timeline or reset) 
-		{
-	        timeline_index = timeline;
-	        timeline_speed = 1 / frames;
-			timeline_loop = loop;
-			timeline_running = (timeline_exists(timeline));
-			timeline_position = 0;
-	    }
-	}
-}
-
 /// @function draw_reset()
 /// @description Resets draw color, alpha, and text alignment. Ported from GM8.2.
 function draw_reset()
