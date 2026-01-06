@@ -28,15 +28,15 @@ global.ani_sonic_run = [global.ani_sonic_run_v0, global.ani_sonic_run_v1];
 
 global.ani_sonic_brake_v0 = new animation(sprSonicBrake, 6, 1);
 
-global.ani_sonic_look_v0 = new animation(sprSonicLook, [4, 4, 12], 2);
-global.ani_sonic_look_v1 = new animation(sprSonicLook, 2, -1, [1, 0]);
+global.ani_sonic_look_v0 = new animation(sprSonicLook, 6,  1);
+global.ani_sonic_look_v1 = new animation(sprSonicLook, 6, -1, [1, 0]);
 global.ani_sonic_look = [global.ani_sonic_look_v0, global.ani_sonic_look_v1];
 
-global.ani_sonic_crouch_v0 = new animation(sprSonicCrouch, 1,  3, [0, 1, 2, 3]);
-global.ani_sonic_crouch_v1 = new animation(sprSonicCrouch, 1, -1, [1, 0]);
+global.ani_sonic_crouch_v0 = new animation(sprSonicCrouch, 6, 2, [0, 1, 2]);
+global.ani_sonic_crouch_v1 = new animation(sprSonicCrouch, 6, -1, [1, 0]);
 global.ani_sonic_crouch = [global.ani_sonic_crouch_v0, global.ani_sonic_crouch_v1];
 
-global.ani_sonic_roll_v0 = new animation(sprSonicRoll, 1);
+global.ani_sonic_roll_v0 = new animation(sprSonicRoll, 1, 0, [1, 0, 2, 0, 3, 0, 4, 0]);
 
 global.ani_sonic_spindash_v0 = new animation(sprSonicSpindash, 1);
 
