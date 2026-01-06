@@ -12,7 +12,6 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"v1","%Name":"d8e59fd8-e15b-4470-9a6b-31d4fdc34329","name":"d8e59fd8-e15b-4470-9a6b-31d4fdc34329","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
     {"$GMSpriteFrame":"v1","%Name":"b675a79c-4c65-42bd-8e62-240f961a0e0c","name":"b675a79c-4c65-42bd-8e62-240f961a0e0c","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
     {"$GMSpriteFrame":"v1","%Name":"e1d4aa8b-5a0d-4529-a789-c4f471ace549","name":"e1d4aa8b-5a0d-4529-a789-c4f471ace549","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
     {"$GMSpriteFrame":"v1","%Name":"e8895587-439e-45af-8237-8c345173365b","name":"e8895587-439e-45af-8237-8c345173365b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
@@ -74,11 +73,8 @@
     "tracks":[
       {"$GMSpriteFramesTrack":"","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"$KeyframeStore<SpriteFrameKeyframe>":"","Keyframes":[
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"d8e59fd8-e15b-4470-9a6b-31d4fdc34329","path":"sprites/sprSonicCrouch/sprSonicCrouch.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"2cde9208-d6b6-4172-8ba5-1feb0140b801","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
-            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"b675a79c-4c65-42bd-8e62-240f961a0e0c","path":"sprites/sprSonicCrouch/sprSonicCrouch.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"2b32b67e-1002-4441-a1a4-85755b90d2e5","IsCreationKey":false,"Key":1.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+              },"Disabled":false,"id":"2b32b67e-1002-4441-a1a4-85755b90d2e5","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"e1d4aa8b-5a0d-4529-a789-c4f471ace549","path":"sprites/sprSonicCrouch/sprSonicCrouch.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"67aee135-d9ee-4a8d-990a-b939c50ea5aa","IsCreationKey":false,"Key":1.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
