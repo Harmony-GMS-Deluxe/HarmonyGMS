@@ -32,3 +32,13 @@ function input_check_released(command)
 		return previous_state & command != 0 and state & command == 0;
 	}
 }
+
+/// @function input_opposing(negative_command, positive_command)
+/// @description Checks if the given commands oppose with one or another.
+/// @param {Enum.INPUT} negative_command Negative input command constant.
+/// @param {Enum.INPUT} positive_command Positive input command constant.
+/// @returns {Integer}
+function input_opposing(negative_command, positive_command)
+{
+	return (input_check(positive_command) - input_check(negative_command));
+}

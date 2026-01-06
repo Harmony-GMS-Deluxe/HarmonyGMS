@@ -18,3 +18,6 @@ if (invincibility_time > 0 and --invincibility_time == 0)
 {
 	// TODO: add invincibility sparkles & BGM, and remove them here
 }
+
+animation_update();
+with (spin_dash_stamp) animation_update();
