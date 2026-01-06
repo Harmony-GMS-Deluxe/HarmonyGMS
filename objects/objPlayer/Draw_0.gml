@@ -3,13 +3,13 @@ var x_int = x div 1;
 var y_int = y div 1;
 
 // Character sprite
-if (sprite_index != -1) draw_sprite_ext(sprite_index, image_index, x_int, y_int, image_xscale, 1, round(image_angle / 45) * 45, c_white, image_alpha);
+//image_alpha = (invuln_time > 0 ? (invuln_time mod 4 < 2) : 1);
+player_draw_before();
+draw_self_floored();
+player_draw_after();
 
-// Dash smoke
-if (state == player_is_spindashing)
-{
-	draw_sprite_ext(sprDashSmoke, ctrlWindow.image_index div 2, x_int, y_int, image_xscale, 1, mask_direction, c_white, 1);
-}
+// Stamps
+with (spin_dash_stamp) draw_self_floored();
 
 // Virtual mask
 var sine = dsin(mask_direction);

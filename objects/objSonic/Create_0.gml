@@ -1,15 +1,50 @@
 /// @description Initialize
 event_inherited();
 
-// Animations
-player_define_animation("idle", animSonicIdle); // MOD.GEN (Incomplete)
-player_define_animation("teeter", animSonicTeeter); // Sonic 3
-player_define_animation("look", animSonicLook); // MOD.GEN
-player_define_animation("look_end", animSonicLookEnd); // MOD.GEN
-player_define_animation("crouch", animSonicCrouch); // MOD.GEN
-player_define_animation("crouch_end", animSonicCrouchEnd); // MOD.GEN
-player_define_animation("roll", animSonicRoll); // Sonic 3
-player_define_animation("spindash", animSonicSpindash); // Sonic 3
-player_define_animation("walk", animSonicWalk); // Sonic 3
-player_define_animation("run", animSonicRun); // Sonic 3
-player_define_animation("brake", animSonicBrake); // Sonic 3
+player_animate = function()
+{
+	switch (animation_data.index)
+	{
+		case ANIM.IDLE:
+		{
+			player_set_animation(global.ani_sonic_idle_v0);
+            image_angle = gravity_direction;
+			break;
+		}
+		case ANIM.TEETER:
+		{
+			player_animate_teeter(global.ani_sonic_teeter);
+			break;
+		}
+		case ANIM.RUN:
+		{
+			player_animate_run(global.ani_sonic_run);
+			break;
+		}
+		case ANIM.BRAKE:
+		{
+			player_set_animation(global.ani_sonic_brake_v0);
+			break;
+		}
+		case ANIM.LOOK_UP:
+		{
+			player_set_animation(global.ani_sonic_look);
+			break;
+		}
+		case ANIM.CROUCH_DOWN:
+		{
+			player_set_animation(global.ani_sonic_crouch);
+			break;
+		}
+		case ANIM.ROLL:
+		{
+			player_animate_roll(global.ani_sonic_roll_v0);
+			break;
+		}
+		case ANIM.SPINDASH:
+		{
+			player_set_animation(global.ani_sonic_spindash_v0);
+			break;
+		}
+	}
+}

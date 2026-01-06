@@ -86,9 +86,7 @@ function player_is_jumping(phase)
 			player_ground(undefined);
 			
 			// Animate
-			player_animate("roll");
-			timeline_speed = 1 / max(5 - abs(x_speed) div 1, 1);
-			image_angle = gravity_direction;
+			animation_init(ANIM.ROLL);
 			
 			// Sound
 			sound_play(sfxJump);

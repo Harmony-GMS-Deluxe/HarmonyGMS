@@ -75,9 +75,16 @@ if (tilemap_count == 3)
 	--tilemap_count;
 }
 
-// Animations
-animations = ds_map_create();
-current_animation = "";
+// Input
+input_axis_x = 0;
+input_axis_y = 0;
+
+// Animation
+animation_data = new animation_core();
+//animation_history = array_create(16);
+
+// Stamps
+spin_dash_stamp = new stamp();
 
 // Misc.
 instance_create_layer(x, y, layer, objCamera, { gravity_direction });
@@ -129,27 +136,52 @@ player_resist_slope = function (force)
 	x_speed -= dsin(local_direction) * force;
 };
 
-/// @method player_animate(name, [reset])
-/// @description Sets the player's current animation to the given string, and their timeline to that which matches it.
-/// @param {String} name Animation to set.
-/// @param {Boolean} [reset] Reset the animation.
-player_animate = function (name, reset = false)
+/// @method player_animate()
+/// @description Sets the player's current animation.
+player_animate = function() {};
+
+/// @method player_set_animation(ani, [ang])
+/// @description Sets the given animation within the player's animation core.
+/// @param {Undefined|Struct.animation|Array} ani Animation to set. Accepts an array as animation variants.
+/// @param {Real} [ang] Angle to set (optional, defaults to gravity_direction).
+player_set_animation = function(ani, ang = gravity_direction)
 {
-	var anim_index = ds_map_find_value(animations, name);
-	if ((anim_index != -1 and timeline_index != anim_index) or reset)
-	{
-		current_animation = name;
-		timeline_set(id, anim_index, 1, true, reset);
-	}
+	animation_set(ani);
+	image_angle = ang;
 };
 
-/// @method player_define_animation(animation, index)
-/// @description Defines the player's animation to the given string, and their timeline to that as well.
-/// @param {String} animation Animation to define.
-/// @param {Timeline} index Timeline index to assign.
-player_define_animation = function (animation, index)
+/// @method player_animate_teeter(ani)
+/// @description Sets the given animation within the player's animation core based on teeter conditions.
+/// @param {Undefined|Struct.animation|Array} ani Animation to set. Accepts an array as animation variants.
+player_animate_teeter = function(ani)
 {
-	animations[? animation] = index;
+	animation_data.variant = (cliff_sign != image_xscale);
+	player_set_animation(ani);
+};
+
+/// @method player_animate_run(ani)
+/// @description Sets the given animation within the player's animation core based on running conditions.
+/// @param {Undefined|Struct.animation|Array} ani Animation to set. Accepts an array as animation variants.
+/// @param {Real} [ang] Angle to set (optional, defaults to direction).
+player_animate_run = function(ani, ang = direction)
+{
+    var variant = animation_data.variant;
+    var speed_abs = abs(x_speed);
+    variant = 1;
+    if (speed_abs < 6) variant = 0;
+    player_set_animation(ani, ang);
+    animation_data.variant = variant;
+    animation_data.speed = 1 / max(8 - speed_abs div 1, 1);
+};
+
+/// @method player_animate_roll(ani, [speed])
+/// @description Sets the given animation within the player's animation core based on rolling conditions.
+/// @param {Undefined|Struct.animation|Array} ani Animation to set. Accepts an array as animation variants.
+/// @param {Real} [speed] Speed to set (optional).
+player_animate_roll = function(ani, ani_speed = 1 / max(5 - abs(x_speed) div 1, 1))
+{
+	player_set_animation(ani);
+    animation_data.speed = ani_speed;
 };
 
 /// @method player_gain_score(num)
@@ -221,3 +253,11 @@ player_damage = function (inst)
 	- Add dropped rings, and toss them.
 	- Add death state. */
 };
+
+/// @method player_draw_before()
+/// @description Draws player effects behind the character sprite.
+player_draw_before = function() {};
+
+/// @method player_draw_after()
+/// @description Draws player effects in front of the character sprite.
+player_draw_after = function() {};

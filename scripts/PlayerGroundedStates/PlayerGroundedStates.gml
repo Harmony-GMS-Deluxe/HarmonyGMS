@@ -9,7 +9,6 @@ function player_is_ready(phase)
 		}
 		case PHASE.STEP:
 		{
-			timeline_running = true;
 			player_perform(player_is_standing);
 			break;
 		}
@@ -37,8 +36,8 @@ function player_is_standing(phase)
 			}
 			
 			// Animate
-			player_animate(cliff_sign != 0 ? "teeter" : "idle");
-			image_angle = gravity_direction;
+            var ani_idle = (cliff_sign != 0 ? ANIM.TEETER : ANIM.IDLE);
+            animation_init(ani_idle, 0);
 			break;
 		}
 		case PHASE.STEP:
@@ -64,17 +63,17 @@ function player_is_standing(phase)
 			}
 			
 			// Run
-			if ((input_check(INPUT.LEFT) xor input_check(INPUT.RIGHT)) or x_speed != 0)
-			{
-				return player_perform(player_is_running);
-			}
-			
-			// Look / crouch
-			if (cliff_sign == 0)
-			{
-				if (input_check(INPUT.UP)) return player_perform(player_is_looking);
-				if (input_check(INPUT.DOWN)) return player_perform(player_is_crouching);
-			}
+            if (x_speed != 0 or input_axis_x != 0)
+            {
+                return player_perform(player_is_running);
+            }
+                
+            // Look / crouch
+            if (cliff_sign == 0)
+            {
+                if (input_axis_y == -1) return player_perform(player_is_looking);
+                if (input_axis_y == 1) return player_perform(player_is_crouching);
+            }
 			break;
 		}
 		case PHASE.EXIT:
@@ -91,45 +90,44 @@ function player_is_running(phase)
 	{
 		case PHASE.ENTER:
 		{
+			// Animate
+            animation_init(ANIM.RUN);
 			break;
 		}
 		case PHASE.STEP:
 		{
+			var facing = sign(x_speed);
+			var velocity = abs(x_speed);
+			
 			// Jump
 			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
 			
 			// Handle ground motion
-			var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
+			var can_brake = false;
 			
 			if (control_lock_time == 0)
 			{
-				if (input_sign != 0)
+				if (input_axis_x != 0)
 				{
 					// If moving in the opposite direction...
-					if (x_speed != 0 and sign(x_speed) != input_sign)
+					if (x_speed != 0 and facing != input_axis_x)
 					{
-						// Brake immediately
-						if (abs(x_speed) > 4)
-						{
-							image_xscale = -input_sign;
-							if (mask_direction == gravity_direction)
-							{
-								sound_play(sfxBrake);
-								return player_perform(player_is_braking);
-							}
-						}
-						
 						// Decelerate and reverse direction
-						x_speed += deceleration * input_sign;
-						if (sign(x_speed) == input_sign) x_speed = deceleration * input_sign;
+						can_brake = true;
+						x_speed += deceleration * input_axis_x;
+                        if (facing == input_axis_x)
+                        {
+                            x_speed = deceleration * input_axis_x;
+                        }
 					}
 					else
 					{
 						// Accelerate
-						image_xscale = input_sign;
-						if (abs(x_speed) < speed_cap)
+						can_brake = false;
+						image_xscale = input_axis_x;
+						if (velocity < speed_cap)
 						{
-							x_speed = min(abs(x_speed) + acceleration, speed_cap) * input_sign;
+							x_speed = min(velocity + acceleration, speed_cap) * input_axis_x;
 						}
 					}
 				}
@@ -166,121 +164,38 @@ function player_is_running(phase)
 			player_resist_slope(0.125);
 			
 			// Roll
-			var velocity = abs(x_speed);
-			if (input_sign == 0 and velocity >= 1.03125 and input_check(INPUT.DOWN))
+			if (input_axis_y == 1 and velocity >= 1.03125 and input_axis_x == 0)
 			{
 				sound_play(sfxRoll);
 				return player_perform(player_is_rolling);
 			}
 			
 			// Stand
-			if (x_speed == 0 and input_sign == 0) return player_perform(player_is_standing);
-			break;
-		}
-		case PHASE.EXIT:
-		{
-			control_lock_time = 0;
-			break;
-		}
-	}
-}
-
-/// @function player_is_braking(phase)
-function player_is_braking(phase)
-{
-	switch (phase)
-	{
-		case PHASE.ENTER:
-		{
-			rolling = false;
-			
-			player_animate("brake");
-			image_angle = gravity_direction;
-			break;
-		}
-		case PHASE.STEP:
-		{
-			// Jump
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
-			
-			// Handle ground motion
-			var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
-			
-			if (control_lock_time == 0)
-			{
-				if (input_sign != 0)
-				{
-					// If moving in the opposite direction...
-					if (x_speed != 0 and sign(x_speed) != input_sign)
-					{
-						// Decelerate and reverse direction
-						x_speed += deceleration * input_sign;
-						if (sign(x_speed) == input_sign)
-						{
-							x_speed = deceleration * input_sign;
-							return player_perform(player_is_running);
-						}
-					}
-					else
-					{
-						return player_perform(player_is_running);
-					}
-				}
-				else
-				{
-					// Friction
-					x_speed -= min(abs(x_speed), acceleration) * sign(x_speed);
-					
-					/* AUTHOR NOTE: the values for friction and acceleration are the same in the 16-bit Genesis games. */
-				}
-			}
-			
-			// Move
-			player_move_on_ground();
-			if (state_changed) exit;
-			
-			// Fall
-			if (not on_ground) return player_perform(player_is_falling);
-			
-			// Slide down steep slopes
-			if (abs(x_speed) < slide_threshold)
-			{
-				if (local_direction >= 90 and local_direction <= 270)
-				{
-					return player_perform(player_is_falling);
-				}
-				else if (local_direction >= 45 and local_direction <= 315)
-				{
-					control_lock_time = slide_duration;
-					return player_perform(player_is_running);
-				}
-			}
-			
-			// Apply slope friction
-			player_resist_slope(0.125);
-			
-			// Roll
-			var velocity = abs(x_speed);
-			if (input_sign == 0 and velocity >= 1.03125 and input_check(INPUT.DOWN))
-			{
-				sound_play(sfxRoll);
-				return player_perform(player_is_rolling);
-			}
-			
-			// Stand
-			if (x_speed == 0 and input_sign == 0) return player_perform(player_is_standing);
-			
-			// Run
-			if (timeline_expired(id)) return player_perform(player_is_running);
+			if (x_speed == 0 and input_axis_x == 0) return player_perform(player_is_standing);
 			
 			// Animate
-			if (timeline_position mod 4 == 0)
+			if (can_brake)
 			{
-				// Kick up dust
-				var offset = y_radius - 6;
-				var ox = x + dsin(direction) * offset;
-				var oy = y + dcos(direction) * offset;
-				particle_spawn("brake_dust", ox, oy);
+				if (animation_data.index != ANIM.BRAKE)
+				{
+					if (mask_direction == gravity_direction and velocity >= 4)
+					{
+						animation_init(ANIM.BRAKE);
+						sound_play(sfxBrake);
+					}
+				}
+				else if (animation_data.time mod 4 == 0)
+				{
+                   // Kick up dust
+					var offset = y_radius - 6;
+					var ox = x + dsin(direction) * offset;
+					var oy = y + dcos(direction) * offset;
+					particle_create(ox, oy, global.ani_brake_dust_v0);
+				}
+			}
+			else
+			{
+				animation_init(ANIM.RUN);
 			}
 			break;
 		}
@@ -300,7 +215,7 @@ function player_is_looking(phase)
 		case PHASE.ENTER:
 		{
 			camera_look_time = 120;
-			player_animate("look");
+			animation_init(ANIM.LOOK_UP);
 			break;
 		}
 		case PHASE.STEP:
@@ -329,11 +244,19 @@ function player_is_looking(phase)
 			if (x_speed != 0) return player_perform(player_is_running);
 			
 			// Stand
-			if (not input_check(INPUT.UP)) 
-			{
-				if (current_animation != "look_end") player_animate("look_end");
-				else if (timeline_expired(id)) return player_perform(player_is_standing);
-			}
+            if (animation_data.index == ANIM.LOOK_UP and animation_data.variant == 1 and animation_is_finished())
+            {
+            	return player_perform(player_is_standing);
+            }
+            
+			if (input_axis_x == 0 and input_axis_y == 0)
+            {
+                if (animation_data.index == ANIM.LOOK_UP and animation_data.variant == 0) animation_data.variant = 1;
+            }
+            else if (input_axis_y != -1)
+            {
+                return player_perform(player_is_standing);
+            }
 			
 			// Ascend camera
 			if (camera_look_time > 0)
@@ -361,7 +284,7 @@ function player_is_crouching(phase)
 		case PHASE.ENTER:
 		{
 			camera_look_time = 120;
-			player_animate("crouch");
+			animation_init(ANIM.CROUCH_DOWN);
 			break;
 		}
 		case PHASE.STEP:
@@ -390,11 +313,19 @@ function player_is_crouching(phase)
 			if (x_speed != 0) return player_perform(player_is_running);
 			
 			// Stand
-			if (not input_check(INPUT.DOWN)) 
-			{
-				if (current_animation != "crouch_end") player_animate("crouch_end");
-				else if (timeline_expired(id)) return player_perform(player_is_standing);
-			}
+            if (animation_data.index == ANIM.CROUCH_DOWN and animation_data.variant == 1 and animation_is_finished())
+            {
+            	return player_perform(player_is_standing);
+            }
+            
+			if (input_axis_x == 0 and input_axis_y == 0)
+            {
+                if (animation_data.index == ANIM.CROUCH_DOWN and animation_data.variant == 0) animation_data.variant = 1;
+            }
+            else if (input_axis_y != 1)
+            {
+                return player_perform(player_is_standing);
+            }
 			
 			// Descend camera
 			if (camera_look_time > 0)
@@ -422,9 +353,7 @@ function player_is_rolling(phase)
 		case PHASE.ENTER:
 		{
 			rolling = true;
-			player_animate("roll");
-			timeline_speed = 1 / max(5 - abs(x_speed) div 1, 1);
-			image_angle = gravity_direction;
+			animation_init(ANIM.ROLL);
 			break;
 		}
 		case PHASE.STEP:
@@ -435,15 +364,14 @@ function player_is_rolling(phase)
 			// Decelerate
 			if (control_lock_time == 0)
 			{
-				var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
-				if (input_sign != 0)
+				if (input_axis_x != 0)
 				{
-					if (sign(x_speed) != input_sign)
+					if (sign(x_speed) != input_axis_x)
 					{
-						x_speed += roll_deceleration * input_sign;
-						if (sign(x_speed) == input_sign) x_speed = roll_deceleration * input_sign;
+						x_speed += roll_deceleration * input_axis_x;
+						if (sign(x_speed) == input_axis_x) x_speed = roll_deceleration * input_axis_x;
 					}
-					else image_xscale = input_sign;
+					else image_xscale = input_axis_x;
 				}
 				
 				// Friction
@@ -478,9 +406,6 @@ function player_is_rolling(phase)
 			
 			// Unroll
 			if (abs(x_speed) < 0.5) return player_perform(player_is_running);
-			
-			// Animate
-			timeline_speed = 1 / max(5 - abs(x_speed) div 1, 1);
 			break;
 		}
 		case PHASE.EXIT:
@@ -500,7 +425,7 @@ function player_is_spindashing(phase)
 		{
 			rolling = true;
 			spindash_charge = 0;
-			player_animate("spindash");
+			animation_init(ANIM.SPINDASH);
 			sound_play(sfxSpinRev);
 			break;
 		}
@@ -524,7 +449,7 @@ function player_is_spindashing(phase)
 			}
 			
 			// Roll
-			if (not input_check(INPUT.DOWN))
+			if (input_axis_y != 1)
 			{
 				x_speed = image_xscale * (8 + spindash_charge div 2);
 				objCamera.alarm[0] = 16;

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"AnimationSetup",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"AnimationSetup",
+  "parent":{
+    "name":"Global",
+    "path":"folders/Scripts/Global.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
