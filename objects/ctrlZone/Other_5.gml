@@ -1,2 +1,2 @@
 /// @description Finish
-global.rings = 0;
+global.ring_count = 0;

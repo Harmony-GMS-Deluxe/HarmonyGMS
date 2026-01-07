@@ -1,4 +1,6 @@
 /// @description Count
+if (ctrlGame.game_paused) exit;
+
 if (control_lock_time > 0 and on_ground)
 {
 	--control_lock_time;

@@ -45,7 +45,7 @@ function player_is_standing(phase)
 		case PHASE.STEP:
 		{
 			// Jump
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
+			if (player_try_jump()) return true;
 			
 			// Move
 			player_move_on_ground();
@@ -60,7 +60,7 @@ function player_is_standing(phase)
 			// Slide down steep slopes
 			if (local_direction >= 45 and local_direction <= 315)
 			{
-				control_lock_time = slide_duration;
+				control_lock_time = SLIDE_DURATION;
 				return player_perform(player_is_running);
 			}
 			
@@ -104,7 +104,7 @@ function player_is_running(phase)
 			var velocity = abs(x_speed);
 			
 			// Jump
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
+			if (player_try_jump()) return true;
 			
 			// Handle ground motion
 			var can_brake = false;
@@ -152,7 +152,7 @@ function player_is_running(phase)
 			if (not on_ground) return player_perform(player_is_falling);
 			
 			// Slide down steep slopes
-			if (abs(x_speed) < slide_threshold)
+			if (abs(x_speed) < SLIDE_THRESHOLD)
 			{
 				if (local_direction >= 90 and local_direction <= 270)
 				{
@@ -160,7 +160,7 @@ function player_is_running(phase)
 				}
 				else if (local_direction >= 45 and local_direction <= 315)
 				{
-					control_lock_time = slide_duration;
+					control_lock_time = SLIDE_DURATION;
 				}
 			}
 			
@@ -225,7 +225,7 @@ function player_is_looking(phase)
 		case PHASE.STEP:
 		{
 			// Jump
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
+			if (player_try_jump()) return true;
 			
 			// Move
 			player_move_on_ground();
@@ -240,7 +240,7 @@ function player_is_looking(phase)
 			// Slide down steep slopes
 			if (local_direction >= 45 and local_direction <= 315)
 			{
-				control_lock_time = slide_duration;
+				control_lock_time = SLIDE_DURATION;
 				return player_perform(player_is_running);
 			}
 			
@@ -294,7 +294,7 @@ function player_is_crouching(phase)
 		case PHASE.STEP:
 		{
 			// Spindash
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_spindashing);
+			if (input_button.jump.pressed) return player_perform(player_is_spindashing);
 			
 			// Move
 			player_move_on_ground();
@@ -309,7 +309,7 @@ function player_is_crouching(phase)
 			// Slide down steep slopes
 			if (local_direction >= 45 and local_direction <= 315)
 			{
-				control_lock_time = slide_duration;
+				control_lock_time = SLIDE_DURATION;
 				return player_perform(player_is_running);
 			}
 			
@@ -363,7 +363,7 @@ function player_is_rolling(phase)
 		case PHASE.STEP:
 		{
 			// Jump
-			if (input_check_pressed(INPUT.ACTION)) return player_perform(player_is_jumping);
+			if (player_try_jump()) return true;
 			
 			// Decelerate
 			if (control_lock_time == 0)
@@ -390,7 +390,7 @@ function player_is_rolling(phase)
 			if (not on_ground) return player_perform(player_is_falling);
 			
 			// Slide down steep slopes
-			if (abs(x_speed) < slide_threshold)
+			if (abs(x_speed) < SLIDE_THRESHOLD)
 			{
 				if (local_direction >= 90 and local_direction <= 270)
 				{
@@ -398,7 +398,7 @@ function player_is_rolling(phase)
 				}
 				else if (local_direction >= 45 and local_direction <= 315)
 				{
-					control_lock_time = slide_duration;
+					control_lock_time = SLIDE_DURATION;
 				}
 			}
 			
@@ -447,7 +447,7 @@ function player_is_spindashing(phase)
 			// Slide down steep slopes
 			if (local_direction >= 45 and local_direction <= 315)
 			{
-				control_lock_time = slide_duration;
+				control_lock_time = SLIDE_DURATION;
 				return player_perform(player_is_rolling);
 			}
 			
@@ -462,7 +462,7 @@ function player_is_spindashing(phase)
 			}
 			
 			// Charge / atrophy
-			if (input_check_pressed(INPUT.ACTION))
+			if (input_button.jump.pressed)
 			{
 				spindash_charge = min(spindash_charge + 2, 8);
 				
@@ -470,7 +470,10 @@ function player_is_spindashing(phase)
 				var rev_sound = sound_play(sfxSpinRev);
 				audio_sound_pitch(rev_sound, 1 + spindash_charge * 0.0625);
 			}
-			else spindash_charge *= 0.96875;
+			else 
+			{
+				spindash_charge *= 0.96875;
+			}
 			break;
 		}
 		case PHASE.EXIT:

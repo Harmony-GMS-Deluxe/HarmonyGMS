@@ -1,6 +1,8 @@
 /// @description Initialize
 image_speed = 0;
 
+character_index = CHARACTER.NONE;
+
 // State machine
 state = player_is_ready;
 state_previous = -1;
@@ -21,18 +23,11 @@ superspeed_time = 0;
 invincibility_time = 0;
 camera_look_time = 0;
 
-slide_duration = 30;
-
 // Physics
 x_speed = 0;
 y_speed = 0;
 
 player_refresh_physics();
-
-slide_threshold = 2.5;
-
-air_drag_threshold = 0.125;
-air_drag = 0.96875;
 
 // Collision detection
 x_radius = 8;
@@ -79,6 +74,29 @@ if (tilemap_count == 3)
 input_axis_x = 0;
 input_axis_y = 0;
 
+/// @method button(verb)
+/// @description Creates a new button.
+/// @param {Enum.INPUT_VERB} verb Verb to check.
+button = function(_verb) constructor
+{
+    verb = _verb;
+    check = false;
+    pressed = false;
+    released = false;
+};
+
+input_button =
+{
+    jump : new button(INPUT_VERB.JUMP),
+    aux : new button(INPUT_VERB.AUX),
+    swap : new button(INPUT_VERB.SWAP),
+    extra : new button(INPUT_VERB.EXTRA),
+    tag : new button(INPUT_VERB.TAG),
+    alt : new button(INPUT_VERB.ALT),
+    start : new button(INPUT_VERB.START),
+    select : new button(INPUT_VERB.SELECT)
+};
+
 // Animation
 animation_data = new animation_core();
 //animation_history = array_create(16);
@@ -103,6 +121,36 @@ player_perform = function (action, reset = false)
 		if (script_exists(state_previous)) state_previous(PHASE.EXIT);
 		if (script_exists(state)) state(PHASE.ENTER);
 	}
+};
+
+/// @method player_reset_input()
+/// @description Resets all player input.
+player_reset_input = function()
+{
+	input_axis_x = 0;
+	input_axis_y = 0;
+	
+	struct_foreach(input_button, function(name, value)
+	{
+	    var verb = value.verb;
+	    value.check = false;
+	    value.pressed = false;
+	    value.released = false;
+	});
+};
+
+/// @method player_try_jump()
+/// @description Sets the player's current state to jumping, if applicable.
+/// @returns {Bool}
+player_try_jump = function()
+{
+    if (input_button.jump.pressed)
+    {
+        player_perform(player_is_jumping);
+        animation_init(ANIM.ROLL);
+        return true;
+    }
+    return false;
 };
 
 /// @method player_rotate_mask()
@@ -202,14 +250,14 @@ player_gain_score = function (num)
 /// @param {Real} num Amount of rings to give.
 player_gain_rings = function (num)
 {
-	global.rings = min(global.rings + num, 999);
+	global.ring_count = min(global.ring_count + num, 999);
 	sound_play(sfxRing);
 	
 	// Gain lives
 	static ring_life_threshold = 99;
-	if (global.rings > ring_life_threshold)
+	if (global.ring_count > ring_life_threshold)
 	{
-		var count = global.rings div 100;
+		var count = global.ring_count div 100;
 		player_gain_lives(count - ring_life_threshold div 100);
 		ring_life_threshold = count * 100 + 99;
 	}
@@ -223,7 +271,7 @@ player_gain_rings = function (num)
 /// @param {Real} num Amount of lives to give.
 player_gain_lives = function (num)
 {
-	lives = min(lives + num, 99);
+	global.life_count = min(global.life_count + num, 99);
 	music_overlay(bgmLife);
 };
 
