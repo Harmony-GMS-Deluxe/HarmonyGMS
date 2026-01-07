@@ -105,7 +105,7 @@ animation_data = new animation_core();
 spin_dash_stamp = new stamp();
 
 // Misc.
-instance_create_layer(x, y, layer, objCamera, { gravity_direction });
+camera = instance_create_layer(x, y, layer, objCamera, { gravity_direction });
 
 /// @method player_perform(action, [reset])
 /// @description Sets the given function as the player's current state.
