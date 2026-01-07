@@ -9,7 +9,7 @@ player_animate = function()
 	{
 		case ANIM.IDLE:
 		{
-			player_set_animation(global.ani_sonic_idle_v0);
+			player_set_animation(global.ani_sonic_idle_v0, gravity_direction);
 			break;
 		}
 		case ANIM.TEETER:
@@ -35,6 +35,11 @@ player_animate = function()
 		case ANIM.CROUCH_DOWN:
 		{
 			player_set_animation(global.ani_sonic_crouch);
+			break;
+		}
+		case ANIM.HURT:
+		{
+			player_set_animation(global.ani_sonic_hurt_v0, gravity_direction);
 			break;
 		}
 		case ANIM.ROLL:
