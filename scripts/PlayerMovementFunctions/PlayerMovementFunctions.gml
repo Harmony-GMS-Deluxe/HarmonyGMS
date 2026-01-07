@@ -32,9 +32,20 @@ function player_move_on_ground()
 		
 		// Handle wall collision
 		var tile_data = player_beam_collision(solid_colliders);
-		if (tile_data != noone and sign(x_speed) == player_eject_wall(tile_data))
+		if (tile_data != noone)
 		{
-			x_speed = 0;
+			var wall_sign = player_eject_wall(tile_data);
+			
+			if (sign(x_speed) == wall_sign) 
+			{
+				x_speed = 0;
+				
+				// Set pushing animation, if applicable
+				if (animation_data.index != ANIM.PUSH and input_axis_x == wall_sign and image_xscale == wall_sign)
+				{
+					animation_init(ANIM.PUSH);
+				}
+			}
 		}
 		
 		// Handle floor collision
@@ -56,19 +67,20 @@ function player_move_on_ground()
 /// @description Updates the player's position in the air and checks for collisions.
 function player_move_in_air()
 {
-	// Calculate the number of steps for collision checking
-	var total_steps = 1 + abs(x_speed) div x_radius + abs(y_speed) div y_radius;
-	var x_step = x_speed / total_steps;
-	var y_step = y_speed / total_steps;
+	// Get Cosine and Sine
 	var sine = dsin(mask_direction);
 	var cosine = dcos(mask_direction);
 	
-	// Loop over the number of steps
+	// Calculate the number of steps for horizontal collision checking
+	var total_steps = 1 + abs(x_speed) div x_radius;
+	var step = x_speed / total_steps;
+	
+	// Loop over the number of horizontal steps
 	repeat (total_steps)
 	{
 		// Move by a single step
-		x += cosine * x_step + sine * y_step;
-		y += -sine * x_step + cosine * y_step;
+		x += cosine * step;
+		y -= sine * step;
 		player_keep_in_bounds();
 		
 		// Detect instances and tilemaps
@@ -76,15 +88,33 @@ function player_move_in_air()
 		
 		// Handle wall collision
 		var tile_data = player_beam_collision(solid_colliders);
-		if (tile_data != noone and sign(x_speed) == player_eject_wall(tile_data))
+		if (tile_data != noone)
 		{
-			x_speed = 0;
+			var wall_sign = player_eject_wall(tile_data);
+			
+			if (sign(x_speed) == wall_sign) x_speed = 0;
 		}
+	}
+	
+	// Calculate the number of steps for vertical collision checking
+	total_steps = 1 + abs(y_speed) div y_radius;
+	step = y_speed / total_steps;
+	
+	// Loop over the number of vertical steps
+	repeat (total_steps)
+	{
+		// Move by a single step
+		x += sine * step;
+		y += cosine * step;
+		player_keep_in_bounds();
+		
+		// Register nearby instances
+		player_detect_entities();
 		
 		// Handle floor collision
 		if (y_speed >= 0)
 		{
-			tile_data = player_find_floor(y_radius);
+			var tile_data = player_find_floor(y_radius);
 			if (tile_data != undefined)
 			{
 				landed = true;
@@ -95,7 +125,7 @@ function player_move_in_air()
 		else
 		{
 			// Handle ceiling collision
-			tile_data = player_find_ceiling(y_radius);
+			var tile_data = player_find_ceiling(y_radius);
 			if (tile_data != undefined)
 			{
 				// Flip mask and land on the ceiling
@@ -104,7 +134,7 @@ function player_move_in_air()
 				player_ground(tile_data);
 				
 				// Abort if rising slowly or the ceiling is too shallow
-				if (y_speed > -4 or (local_direction >= 135 and local_direction <= 225))
+				if (y_speed > CEILING_LAND_THRESHOLD or (local_direction >= 135 and local_direction <= 225))
 				{
 					// Slide against it
 					sine = dsin(local_direction);
@@ -139,5 +169,9 @@ function player_move_in_air()
 			if (badnik_chain > 0 and invincibility_time == 0) badnik_chain = 0;
 			break;
 		}
+		
+		// Handle wall collision (again)
+		var wall_data = player_beam_collision(solid_colliders);
+		if (wall_data != noone) player_eject_wall(wall_data);
 	}
 }

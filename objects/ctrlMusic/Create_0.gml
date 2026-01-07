@@ -11,7 +11,7 @@ looping_tracks = [bgmMadGear];
 /// @param {Asset.GMSound} soundid Sound asset to set loop points for.
 /// @param {Real} loop_start Start point of the loop in seconds.
 /// @param {Real} loop_end End point of the loop in seconds.
-var set_music_loop = function (soundid, loop_start, loop_end)
+set_music_loop = function (soundid, loop_start, loop_end)
 {
 	audio_sound_loop_start(soundid, loop_start);
 	audio_sound_loop_end(soundid, loop_end);

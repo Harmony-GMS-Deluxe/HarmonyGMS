@@ -161,10 +161,10 @@ function player_is_running(phase)
 			}
 			
 			// Apply slope friction
-			player_resist_slope(0.125);
+			player_resist_slope(SLOPE_FRICTION);
 			
 			// Roll
-			if (input_axis_y == 1 and velocity >= 1.03125 and input_axis_x == 0)
+			if (input_axis_y == 1 and velocity >= ROLL_THRESHOLD and input_axis_x == 0)
 			{
 				sound_play(sfxRoll);
 				return player_perform(player_is_rolling);
@@ -178,7 +178,7 @@ function player_is_running(phase)
 			{
 				if (animation_data.index != ANIM.BRAKE)
 				{
-					if (mask_direction == gravity_direction and velocity >= 4)
+					if (mask_direction == gravity_direction and velocity >= BRAKE_THRESHOLD)
 					{
 						animation_init(ANIM.BRAKE);
 						sound_play(sfxBrake);
@@ -193,9 +193,11 @@ function player_is_running(phase)
 					particle_create(ox, oy, global.ani_brake_dust_v0);
 				}
 			}
-			else
+			else if (not ((animation_data.index == ANIM.PUSH and image_xscale == input_axis_x) or
+			(animation_data.index == ANIM.BRAKE and animation_data.time < 24 and mask_direction == gravity_direction and image_xscale != input_axis_x)))
 			{
-				animation_init(ANIM.RUN);
+				var new_animation = (velocity < 6) ? ANIM.WALK : ANIM.RUN;
+				if (animation_data.index != new_animation) animation_init(new_animation);
 			}
 			break;
 		}
@@ -399,9 +401,7 @@ function player_is_rolling(phase)
 			}
 			
 			// Apply slope friction
-			var friction_uphill = 0.078125;
-			var friction_downhill = 0.3125;
-			var slope_friction = (sign(x_speed) == sign(dsin(local_direction)) ? friction_uphill : friction_downhill);
+			var slope_friction = (sign(x_speed) == sign(dsin(local_direction)) ? ROLL_SLOPE_FRICTION_UP : ROLL_SLOPE_FRICTION_DOWN);
 			player_resist_slope(slope_friction);
 			
 			// Unroll
@@ -469,7 +469,7 @@ function player_is_spindashing(phase)
 			}
 			else 
 			{
-				spindash_charge *= 0.96875;
+				spindash_charge *= SPINDASH_ATROPHY;
 			}
 			break;
 		}

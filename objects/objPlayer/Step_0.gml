@@ -22,7 +22,7 @@ if (script_exists(state))
 player_animate();
 
 // Direct camera
-with (objCamera)
+with (camera)
 {
 	x = other.x div 1;
 	y = other.y div 1;

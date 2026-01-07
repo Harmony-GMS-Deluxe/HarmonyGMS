@@ -11,6 +11,17 @@ function player_is_falling(phase)
 			
 			// Detach from ground
 			player_ground(undefined);
+			
+			// Update Animations
+			switch (animation_data.index)
+			{
+				case ANIM.PUSH:
+				{
+					animation_init(ANIM.WALK);
+					animation_data.speed = 0.125;
+					break;
+				}
+			}
 			break;
 		}
 		case PHASE.STEP:
@@ -177,7 +188,7 @@ function player_is_hurt(phase)
 		}
 		case PHASE.EXIT:
 		{
-			recovery_time = 120;
+			recovery_time = RECOVERY_DURATION;
 			break;
 		}
 	}
