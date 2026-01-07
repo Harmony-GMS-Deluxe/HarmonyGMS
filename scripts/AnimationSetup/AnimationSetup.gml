@@ -2,6 +2,8 @@
 
 global.ani_ring_sparkle_v0 = new animation(sprRingSparkle, 4, -1);
 
+global.ani_exhaust_v0 = new animation(sprExhaust, 2, -1);
+
 #endregion
 
 #region Player
@@ -35,6 +37,8 @@ global.ani_sonic_look = [global.ani_sonic_look_v0, global.ani_sonic_look_v1];
 global.ani_sonic_crouch_v0 = new animation(sprSonicCrouch, 6, 2, [0, 1, 2]);
 global.ani_sonic_crouch_v1 = new animation(sprSonicCrouch, 6, -1, [1, 0]);
 global.ani_sonic_crouch = [global.ani_sonic_crouch_v0, global.ani_sonic_crouch_v1];
+
+global.ani_sonic_hurt_v0 = new animation(sprSonicHurt, 6, 0);
 
 global.ani_sonic_roll_v0 = new animation(sprSonicRoll, 1, 0, [1, 0, 2, 0, 3, 0, 4, 0]);
 

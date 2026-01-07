@@ -152,9 +152,7 @@ function player_is_hurt(phase)
 			player_ground(undefined);
 			
 			// Animate
-			player_animate("hurt");
-			timeline_speed = 1;
-			image_angle = gravity_direction;
+			animation_init(ANIM.HURT);
 			break;
 		}
 		case PHASE.STEP:
