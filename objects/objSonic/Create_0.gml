@@ -1,6 +1,8 @@
 /// @description Initialize
 event_inherited();
 
+character_index = CHARACTER.SONIC;
+
 player_animate = function()
 {
 	switch (animation_data.index)
@@ -8,7 +10,6 @@ player_animate = function()
 		case ANIM.IDLE:
 		{
 			player_set_animation(global.ani_sonic_idle_v0);
-            image_angle = gravity_direction;
 			break;
 		}
 		case ANIM.TEETER:

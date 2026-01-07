@@ -16,6 +16,7 @@ switch (room)
 	{
 		name = "DEMONSTRATION";
 		act = 1;
+		music_enqueue(bgmMadGear, 0);
 		break;
 	}
 }

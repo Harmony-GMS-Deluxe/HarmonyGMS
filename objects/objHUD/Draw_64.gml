@@ -11,7 +11,7 @@ if (time < 32400 or flash) // 32400 frames = 9 minutes
 {
 	draw_sprite(sprHUD, 1, 16, 25);
 }
-if (global.rings > 0 or flash)
+if (global.ring_count > 0 or flash)
 {
 	draw_sprite(sprHUD, 2, 16, 41);
 }
@@ -19,12 +19,12 @@ if (global.rings > 0 or flash)
 // Lives
 draw_set_halign(fa_right);
 draw_set_font(global.font_lives);
-draw_text(64, CAMERA_HEIGHT - 15, lives);
+draw_text(64, CAMERA_HEIGHT - 15, global.life_count);
 
 // Score and rings
 draw_set_font(global.font_hud);
-draw_text(112, 9, score);
-draw_text(88, 41, global.rings);
+draw_text(112, 9, global.score_count);
+draw_text(88, 41, global.ring_count);
 
 // Time
 var minutes = time div 3600;

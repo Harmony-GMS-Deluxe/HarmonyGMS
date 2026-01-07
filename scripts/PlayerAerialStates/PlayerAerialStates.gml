@@ -16,16 +16,15 @@ function player_is_falling(phase)
 		case PHASE.STEP:
 		{
 			// Accelerate
-			var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
-			if (input_sign != 0)
+			if (input_axis_x != 0)
 			{
-				image_xscale = input_sign;
-				if (abs(x_speed) < speed_cap or sign(x_speed) != input_sign)
+				image_xscale = input_axis_x;
+				if (abs(x_speed) < speed_cap or sign(x_speed) != input_axis_x)
 				{
-					x_speed += air_acceleration * input_sign;
-					if (abs(x_speed) > speed_cap and sign(x_speed) == input_sign)
+					x_speed += air_acceleration * input_axis_x;
+					if (abs(x_speed) > speed_cap and sign(x_speed) == input_axis_x)
 					{
-						x_speed = speed_cap * input_sign;
+						x_speed = speed_cap * input_axis_x;
 					}
 				}
 			}
@@ -38,9 +37,9 @@ function player_is_falling(phase)
 			if (on_ground) return player_perform(x_speed != 0 ? player_is_running : player_is_standing);
 			
 			// Apply air resistance
-			if (y_speed < 0 and y_speed > -4 and abs(x_speed) > air_drag_threshold)
+			if (y_speed < 0 and y_speed > -4 and abs(x_speed) > AIR_DRAG_THRESHOLD)
 			{
-				x_speed *= air_drag;
+				x_speed *= AIR_DRAG;
 			}
 			
 			// Fall
@@ -95,16 +94,15 @@ function player_is_jumping(phase)
 		case PHASE.STEP:
 		{
 			// Accelerate
-			var input_sign = input_check(INPUT.RIGHT) - input_check(INPUT.LEFT);
-			if (input_sign != 0)
+			if (input_axis_x != 0)
 			{
-				image_xscale = input_sign;
-				if (abs(x_speed) < speed_cap or sign(x_speed) != input_sign)
+				image_xscale = input_axis_x;
+				if (abs(x_speed) < speed_cap or sign(x_speed) != input_axis_x)
 				{
-					x_speed += air_acceleration * input_sign;
-					if (abs(x_speed) > speed_cap and sign(x_speed) == input_sign)
+					x_speed += air_acceleration * input_axis_x;
+					if (abs(x_speed) > speed_cap and sign(x_speed) == input_axis_x)
 					{
-						x_speed = speed_cap * input_sign;
+						x_speed = speed_cap * input_axis_x;
 					}
 				}
 			}
@@ -117,15 +115,15 @@ function player_is_jumping(phase)
 			if (on_ground) return player_perform(x_speed != 0 ? player_is_running : player_is_standing);
 			
 			// Lower height
-			if (y_speed < -jump_release and not input_check(INPUT.ACTION))
+			if (y_speed < -jump_release and input_button.jump.released)
 			{
 				y_speed = -jump_release;
 			}
 			
 			// Apply air resistance
-			if (y_speed < 0 and y_speed > -4 and abs(x_speed) > air_drag_threshold)
+			if (y_speed < 0 and y_speed > -4 and abs(x_speed) > AIR_DRAG_THRESHOLD)
 			{
-				x_speed *= air_drag;
+				x_speed *= AIR_DRAG;
 			}
 			
 			// Fall
