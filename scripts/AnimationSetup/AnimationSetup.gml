@@ -1,14 +1,17 @@
 #region Objects
 
-global.ani_ring_sparkle_v0 = new animation(sprRingSparkle, 4, -1);
+global.ani_ring_sparkle_v0 = new animation(sprRingSparkle, 8, -1);
 
-global.ani_exhaust_v0 = new animation(sprExhaust, 2, -1);
+global.ani_explosion_v0 = new animation(sprExplosion, [6, 8, 8, 8, 8, 8, 8, 0], -1);
+global.ani_explosion_dust_v0 = new animation(sprExplosionDust, [6, 8, 8, 8, 8, 0], -1);
+
+global.ani_exhaust_v0 = new animation(sprExhaust, 2, -1, [0, 3, 0, 3, 1, 3, 1, 3, 1, 3, 2, 2, 3]);
 
 #endregion
 
 #region Player
 
-global.ani_brake_dust_v0 = new animation(sprBrakeDust, 2, -1);
+global.ani_brake_dust_v0 = new animation(sprBrakeDust, 4, -1);
 
 global.ani_spindash_dust_v0 = new animation(sprDashSmoke, 2);
 

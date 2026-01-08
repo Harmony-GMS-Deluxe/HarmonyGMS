@@ -237,11 +237,11 @@ player_animate_roll = function(ani, ani_speed = 1 / max(5 - abs(x_speed) div 1, 
 /// @param {Real} num Amount of points to give.
 player_gain_score = function (num)
 {
-	var previous_count = score div 50000;
-	score = min(score + num, 999999);
+	var previous_count = global.score_count div 50000;
+	global.score_count = min(global.score_count + num, 999999);
 	
 	// Gain lives
-	var count = score div 50000;
+	var count = global.score_count div 50000;
 	if (count != previous_count) player_gain_lives(count - previous_count);
 };
 
@@ -283,7 +283,7 @@ player_damage = function (inst)
 	// Abort if already invulnerable in any way
 	if (recovery_time > 0 or invincibility_time > 0 or state == player_is_hurt) exit;
 	
-	if (global.rings > 0)
+	if (global.ring_count > 0)
 	{
 		player_perform(player_is_hurt);
 		

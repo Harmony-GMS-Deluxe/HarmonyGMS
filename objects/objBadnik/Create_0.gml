@@ -44,11 +44,11 @@ reaction = function (inst)
 	}
 	
 	player_gain_score(bonus);
-	part_type_subimage(global.sprite_particles.points, index);
 	with (inst)
 	{
-		particle_spawn("points", x, y);
-		particle_spawn("explosion", x, y);
+		particle_create(x, y, global.ani_explosion_v0);
+		var popup = instance_create_depth(x, y, layer_get_depth("ZoneObjects") - DEPTH_OFFSET_PARTICLE, objPoints);
+		popup.image_index = index;
 		instance_destroy();
 	}
 	
