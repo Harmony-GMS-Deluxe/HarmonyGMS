@@ -93,9 +93,6 @@ function player_is_running(phase)
 		case PHASE.ENTER:
 		{
 			rolling = false;
-			
-			// Animate
-            animation_init(ANIM.RUN);
 			break;
 		}
 		case PHASE.STEP:

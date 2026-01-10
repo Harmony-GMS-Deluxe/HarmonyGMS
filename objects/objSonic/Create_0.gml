@@ -55,7 +55,7 @@ player_animate = function()
 		}
 		case ANIM.BRAKE:
 		{
-			player_set_animation(global.ani_sonic_brake_v0);
+			player_set_animation(global.ani_sonic_brake_v0, gravity_direction);
 			break;
 		}
 		case ANIM.TEETER:
