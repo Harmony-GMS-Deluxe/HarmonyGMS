@@ -207,21 +207,6 @@ player_animate_teeter = function(ani)
 	player_set_animation(ani);
 };
 
-/// @method player_animate_run(ani)
-/// @description Sets the given animation within the player's animation core based on running conditions.
-/// @param {Undefined|Struct.animation|Array} ani Animation to set. Accepts an array as animation variants.
-/// @param {Real} [ang] Angle to set (optional, defaults to direction).
-player_animate_run = function(ani, ang = direction)
-{
-    var variant = animation_data.variant;
-    var speed_abs = abs(x_speed);
-    variant = 1;
-    if (speed_abs < 6) variant = 0;
-    player_set_animation(ani, ang);
-    animation_data.variant = variant;
-    animation_data.speed = 1 / max(8 - speed_abs div 1, 1);
-};
-
 /// @method player_animate_roll(ani, [speed])
 /// @description Sets the given animation within the player's animation core based on rolling conditions.
 /// @param {Undefined|Struct.animation|Array} ani Animation to set. Accepts an array as animation variants.
@@ -301,6 +286,56 @@ player_damage = function (inst)
 	- Add dropped rings, and toss them.
 	- Add death state. */
 };
+
+/// @method player_can_lock_on(inst)
+/// @description Checks if the player can lock on to the given instance for a homing attack.
+/// @param {Id.Instance} inst Object or instance to check.
+/// @returns {Bool}
+player_can_lock_on = function (inst)
+{
+	// Abort if the instance is not available
+	if (not instance_exists(inst)) return false;
+	
+	// Abort if the instance is far away
+	if (point_distance(x, y, inst.x, inst.y) > 128) return false;
+	
+	// Abort on an indirect line of sight
+	with (inst)
+	{
+		if (collision_line(x, y, other.x, other.y, layer_tilemap_get_id("CollisionMain"), false, true) != noone)
+		{
+			return false;
+		}
+	}
+	
+	// Check against rotation
+	switch (mask_direction)
+	{
+		case 0:
+		{
+			if (sign(inst.x - x) != image_xscale or y >= inst.y) return false;
+			break;
+		}
+		case 90:
+		{
+			if (sign(y - inst.y) != image_xscale or x >= inst.x) return false;
+			break;
+		}
+		case 180:
+		{
+			if (sign(x - inst.x) != image_xscale or y <= inst.y) return false;
+			break;
+		}
+		case 270:
+		{
+			if (sign(inst.y - y) != image_xscale or x <= inst.x) return false;
+			break;
+		}
+	}
+	
+	// Lock-on is possible
+	return true;
+}
 
 /// @method player_draw_before()
 /// @description Draws player effects behind the character sprite.

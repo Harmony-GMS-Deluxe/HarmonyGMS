@@ -12,11 +12,24 @@ reaction = function (inst)
 	}
 	
 	// Rebound
-	if (y_speed > 0 and not player_part_collision(inst, -y_radius))
+	if (state == sonic_is_homing)
 	{
-		y_speed *= -1;
+		// Stop moving and bounce
+		player_perform(player_is_falling)
+		x_speed = 0;
+		y_speed = -jump_height div 1;
 	}
-	else y_speed -= sign(y_speed);
+	else if (not on_ground)
+	{
+		if (y_speed < 0 and player_part_collision(inst, -y_radius))
+		{
+			++y_speed;
+		}
+		else if (y_speed >= 0 and player_part_collision(inst, y_radius))
+		{
+			y_speed *= -1;
+		}
+	}
 	
 	// Score
 	var bonus = 100;

@@ -91,7 +91,7 @@ function player_is_running(phase)
 		case PHASE.ENTER:
 		{
 			// Animate
-            animation_init(ANIM.RUN);
+            animation_init(ANIM.WALK);
 			break;
 		}
 		case PHASE.STEP:

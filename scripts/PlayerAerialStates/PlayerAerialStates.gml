@@ -142,6 +142,77 @@ function player_is_jumping(phase)
 			{
 				y_speed = min(y_speed + gravity_force, gravity_cap);
 			}
+			
+			// Activate Character Skills
+			switch (object_index)
+			{
+				case objSonic:
+				{
+					// Homing actions
+					if (rolling)
+					{
+						// Reticle creation/destruction
+						if (not instance_exists(objHomingReticle))
+						{
+							if (jump_action)
+							{
+								// Record targets (higher priority ones should be added at the end of the list)
+								var target_list = [instance_nearest(x, y, objBadnik)];
+						
+								// Evaluate all targets
+								for (var n = array_length(target_list) - 1; n > -1; --n)
+								{
+									// Get the current target; lock on to it if possible
+									var inst = target_list[n];
+									if (inst != noone and player_can_lock_on(inst))
+									{
+										with (instance_create_depth(inst.x, inst.y, depth - 1, objHomingReticle))
+										{
+											target_id = inst;
+											player_id = other.id;
+										}
+										break;
+									}
+								}
+							}
+						}
+						else if (not player_can_lock_on(objHomingReticle.target_id))
+						{
+							instance_destroy(objHomingReticle);
+						}
+				
+						// Perform a homing action
+						if (input_button.jump.pressed and jump_action)
+						{
+							// Burst effect and sound
+							//part_particles_create(objResources.particles, x, y, objResources.homing_burst, 1);
+							sound_play(sfxSpinDash);
+					
+							// Homing attack if the reticle is present; dash otherwise
+							if (instance_exists(objHomingReticle))
+							{
+								return player_perform(sonic_is_homing);
+							}
+							else
+							{
+								x_speed = 8 * image_xscale;
+								y_speed = 0;
+								jump_action = false;
+							}
+						}
+					}
+					else if (input_button.jump.pressed) // Curl up
+					{
+						// Set flags
+						rolling = true;
+						jump_action = true;
+				
+						// Animate
+						animation_init(ANIM.ROLL);
+					}
+					break;
+				}
+			}
 			break;
 		}
 		case PHASE.EXIT:
